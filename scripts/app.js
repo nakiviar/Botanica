@@ -27,6 +27,11 @@ class BotanicalApp {
             }
         });
 
+        // Botanica logo click - Add this section
+document.querySelector('.logo').addEventListener('click', () => {
+    this.showPage('dashboard');
+});
+
         // Theme toggle - Add this
         const themeToggle = document.getElementById('theme-toggle');
         if (themeToggle) {
