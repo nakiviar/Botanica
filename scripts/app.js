@@ -25,7 +25,9 @@ class BotanicalApp {
                 console.log('Navigation clicked:', page); // Debug log
                 this.showPage(page);
             }
+        
         });
+
 
         // Botanica logo click - Add this section
 document.querySelector('.logo').addEventListener('click', () => {
@@ -39,6 +41,14 @@ document.querySelector('.logo').addEventListener('click', () => {
                 this.toggleTheme();
             });
         }
+
+        const sortPlants = document.getElementById('sort-plants');
+        if (sortPlants) {
+            sortPlants.addEventListener('change', (e) => {
+            this.renderCollection();
+            });
+        }
+
 
         // Plant form
         const plantForm = document.getElementById('plant-form');
@@ -228,7 +238,18 @@ document.querySelector('.logo').addEventListener('click', () => {
         const container = document.getElementById('collection-grid');
         if (!container) return;
 
-        const plants = this.plantManager.getPlants();
+        let plants = this.plantManager.getPlants();
+
+        // Sort by dropdown selection
+        const sortBy = document.getElementById('sort-plants')?.value || 'name';
+        plants.sort((a, b) => {
+            if (sortBy === 'dateAdded') {
+                return new Date(b.createdAt) - new Date(a.createdAt); // newest first
+            } else {
+                return a[sortBy]?.toLowerCase() > b[sortBy]?.toLowerCase() ? 1 : -1;
+            }
+        });
+
         
         if (plants.length === 0) {
             const message = this.plantManager.currentSearch || this.plantManager.currentFilter !== 'all' ? 
@@ -325,7 +346,8 @@ document.querySelector('.logo').addEventListener('click', () => {
             type: document.getElementById('plant-type').value,
             light: document.getElementById('light-requirement').value,
             notes: document.getElementById('plant-notes').value.trim(),
-            image: this.imageHandler.getImageData()
+            image: this.imageHandler.getImageData(),
+            createdAt: new Date().toISOString()
         };
 
         try {
@@ -539,6 +561,7 @@ document.querySelector('.logo').addEventListener('click', () => {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
+    
 }
 
 // Add empty state styles
