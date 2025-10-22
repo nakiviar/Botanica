@@ -352,3 +352,7 @@ body {
         gap: 1.5rem;
     }
 }
+
+.header .logo {
+    cursor: pointer;
+}
