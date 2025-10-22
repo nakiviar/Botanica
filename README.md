@@ -1,6 +1,6 @@
 # 🌿 Botanica -  Plant Collection App
 
-A beautiful, static web application for plant enthusiasts to collect, organize, and track their plant journey. No backend- everything runs in your browser!
+static web application for plant enthusiasts to collect, organize, and track their plant journey. No backend- everything runs in your browser!
 
 ## ✨ Features
 
