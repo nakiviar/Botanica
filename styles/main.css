@@ -176,3 +176,42 @@ body {
 .mb-3 {
     margin-bottom: 1.5rem;
 }
+
+/* Dark mode variables */
+[data-theme="dark"] {
+    --primary: #8bb574;
+    --secondary: #5a8c4d;
+    --accent: #2d5016;
+    --light: #1a2e05;
+    --dark: #e9f5db;
+    --text: #e9f5db;
+    --text-light: #8bb574;
+    --white: #1a2e05;
+    --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #1a2e05 0%, #2d5016 100%);
+}
+
+[data-theme="dark"] .hero {
+    background: linear-gradient(135deg, var(--white) 0%, var(--light) 100%);
+}
+
+[data-theme="dark"] .hero h2 {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+[data-theme="dark"] .page-header {
+    border-bottom: 2px solid var(--light);
+}
+
+[data-theme="dark"] .empty-state {
+    background: var(--white);
+}
+
+[data-theme="dark"] .notification {
+    background: var(--white);
+}

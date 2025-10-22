@@ -9,6 +9,7 @@ class BotanicalApp {
 
     init() {
         this.bindEvents();
+        this.loadThemePreference(); // Add this line
         this.showPage('dashboard');
         this.updateDashboard();
     }
@@ -25,6 +26,14 @@ class BotanicalApp {
                 this.showPage(page);
             }
         });
+
+        // Theme toggle - Add this
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
 
         // Plant form
         const plantForm = document.getElementById('plant-form');
@@ -85,6 +94,40 @@ class BotanicalApp {
         });
     }
 
+    // Add these new methods for theme handling
+    loadThemePreference() {
+        const savedTheme = localStorage.getItem('theme');
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggle) {
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+                themeToggle.querySelector('span').textContent = 'Light Mode';
+            }
+        }
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const themeToggle = document.getElementById('theme-toggle');
+        const icon = themeToggle.querySelector('i');
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            icon.className = 'fas fa-moon';
+            themeToggle.querySelector('span').textContent = 'Dark Mode';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            icon.className = 'fas fa-sun';
+            themeToggle.querySelector('span').textContent = 'Light Mode';
+        }
+        
+        // Save preference to localStorage
+        localStorage.setItem('theme', document.documentElement.getAttribute('data-theme') || 'light');
+    }
+
+    // Rest of your existing methods remain exactly the same
     showPage(pageName) {
         console.log('Showing page:', pageName); // Debug log
         
