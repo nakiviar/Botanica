@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botanical | Open Source Plant Collection</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <h1>Botanica</h1>
+                <span class="badge">Nature Lovers</span>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-btn" data-page="collection">
+                    <i class="fas fa-leaf"></i>
+                    <span>My Plants</span>
+                </button>
+                <button class="nav-btn" data-page="add-plant">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Plant</span>
+                </button>
+                <button class="nav-btn" data-page="discover">
+                    <i class="fas fa-compass"></i>
+                    <span>Discover</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="hero">
+                    <h2>Welcome to Your Digital Garden</h2>
+                    <p>Collect, organize, and track your plant journey</p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-leaf"></i>
+                            <h3 id="total-plants">0</h3>
+                            <p>Total Plants</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-tint"></i>
+                            <h3 id="needs-water">0</h3>
+                            <p>Need Water</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-sun"></i>
+                            <h3 id="low-light">0</h3>
+                            <p>Low Light</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-plants">
+                    <h3>Recently Added</h3>
+                    <div id="recent-plants-grid" class="plants-grid">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collection Page -->
+            <div id="collection" class="page">
+                <div class="page-header">
+                    <h2>My Plant Collection</h2>
+                    <div class="filter-controls">
+                        <select id="filter-type">
+                            <option value="all">All Plants</option>
+                            <option value="indoor">Indoor</option>
+                            <option value="outdoor">Outdoor</option>
+                        </select>
+                        <input type="text" id="search-plants" placeholder="Search plants...">
+                    </div>
+                </div>
+                <div id="collection-grid" class="plants-grid">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- Add Plant Page -->
+            <div id="add-plant" class="page">
+                <div class="page-header">
+                    <h2>Add New Plant</h2>
+                </div>
+                <form id="plant-form" class="plant-form">
+                    <div class="form-group">
+                        <label for="plant-image">Plant Image</label>
+                        <div class="image-upload">
+                            <div class="upload-area" id="upload-area">
+                                <i class="fas fa-camera"></i>
+                                <p>Click to upload image</p>
+                                <input type="file" id="plant-image" accept="image/*" hidden>
+                            </div>
+                            <div class="image-preview hidden" id="image-preview">
+                                <img id="preview-img" src="" alt="Preview">
+                                <button type="button" id="remove-image" class="btn-remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plant-name">Plant Name *</label>
+                        <input type="text" id="plant-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plant-species">Species</label>
+                        <input type="text" id="plant-species">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plant-type">Plant Type</label>
+                            <select id="plant-type">
+                                <option value="indoor">Indoor</option>
+                                <option value="outdoor">Outdoor</option>
+                                <option value="succulent">Succulent</option>
+                                <option value="herb">Herb</option>
+                                <option value="flower">Flowering</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="light-requirement">Light Requirement</label>
+                            <select id="light-requirement">
+                                <option value="low">Low Light</option>
+                                <option value="medium">Medium Light</option>
+                                <option value="bright">Bright Light</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plant-notes">Care Notes</label>
+                        <textarea id="plant-notes" rows="4" placeholder="Watering schedule, special care instructions..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add to Collection
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Discover Page -->
+            <div id="discover" class="page">
+                <div class="page-header">
+                    <h2>Plant Discovery</h2>
+                    <p>Explore common houseplants and gardening tips</p>
+                </div>
+                <div class="discovery-grid">
+                    <div class="discovery-card">
+                        <div class="discovery-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <h3>Monstera Deliciosa</h3>
+                        <p>Popular indoor plant with unique leaf patterns. Prefers bright, indirect light.</p>
+                    </div>
+                    <div class="discovery-card">
+                        <div class="discovery-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>Snake Plant</h3>
+                        <p>Extremely hardy and low maintenance. Perfect for beginners.</p>
+                    </div>
+                    <div class="discovery-card">
+                        <div class="discovery-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <h3>Fiddle Leaf Fig</h3>
+                        <p>Statement plant that needs consistent care and bright light.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Plant Detail Modal -->
+    <div id="plant-modal" class="modal hidden">
+        <div class="modal-content">
+            <button id="close-modal" class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-content">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/image-handler.js"></script>
+    <script src="scripts/plant-manager.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>
