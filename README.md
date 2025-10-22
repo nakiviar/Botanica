@@ -2,6 +2,20 @@
 
 static web application for plant enthusiasts to collect, organize, and track their plant journey. No backend- everything runs in your browser!
 
+
+---
+
+
+## 📚 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [📁 Project Structure](#-project-structure)
+- [🛠️ Technology Stack](#️-technology-stack)
+- [🌟 Usage](#-usage)
+- [🎯 How to Use](#-how-to-use)
+
+---
 ## ✨ Features
 
 - **🌱 Plant Collection Management**: Add, view, and organize your plants
@@ -12,6 +26,8 @@ static web application for plant enthusiasts to collect, organize, and track the
 - **📱 Responsive Design**: Works on desktop, tablet, and mobile
 - **🎨 Beautiful UI**: Modern, plant-themed design
 
+---
+
 ## 🚀 Quick Start
 
 1. **Download** all the files to a folder
@@ -20,11 +36,35 @@ static web application for plant enthusiasts to collect, organize, and track the
 
 No installation or server required!
 
+---
+
+
 ## 📁 Project Structure
 
-<img width="262" height="388" alt="image" src="https://github.com/user-attachments/assets/7aa59649-1041-431b-b1e2-9d0e033da3c5" />
+Botanica/
+├── .github/
+│   └── workflows/
+│       ├── azure-static-web-apps-jolly-moss-04bffa100.yml
+│       └── azure-static-web-apps-orange-moss-066dd6b00.yml
+├── assets/
+│   ├── icon/
+│       └── placeholder-plant.jpg
+│   └── images/
+│       ├──lucky bamboo plant.jpg
+│       ├──pothos.jpg
+│       └──snake plant.jpg
+├── scripts/
+│   ├──app.js
+│   ├──image-handler.js
+│   └──plant-manager.js
+├── styles/
+│   ├──components.css
+│   ├──main.css
+│   └──responsive.css
+├── index.html
+└── README.md
 
-
+---
 
 ## 🛠️ Technology Stack
 
@@ -32,6 +72,9 @@ No installation or server required!
 - **Storage**: Browser LocalStorage
 - **Icons**: Font Awesome 6
 - **No Frameworks**: Zero dependencies!
+
+---
+
 
 ## 🌟 Usage
 
@@ -49,7 +92,7 @@ No installation or server required!
 - **View Details**: Click any plant card to see full details
 - **Delete Plants**: Use the delete button in plant details
 
-
+---
 
 ## 🎯 How to Use
 
@@ -59,3 +102,4 @@ No installation or server required!
 4. Start adding your plants!
 
 The app will work completely offline and store all your plant data locally in your browser. You can add, view, search, and filter your plant collection with a beautiful, responsive interface!
+[🔝 Back to Top](#-botanica----plant-collection-app)
