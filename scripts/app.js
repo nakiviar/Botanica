@@ -12,7 +12,59 @@ class BotanicalApp {
     this.loadThemePreference(); // Add this line
     this.showPage("dashboard");
     this.updateDashboard();
+
+    this.createFallingLeaves();
   }
+
+
+  // Add this method to your BotanicalApp class
+createFallingLeaves() {
+  const fallingLeavesContainer = document.createElement('div');
+  fallingLeavesContainer.className = 'falling-leaves';
+  document.body.appendChild(fallingLeavesContainer);
+
+  const leafTypes = ['leaf-type-1', 'leaf-type-2', 'leaf-type-3', 'leaf-type-4', 'leaf-type-5'];
+  
+  // Create 15 leaves for a gentle effect
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      this.createLeaf(fallingLeavesContainer, leafTypes);
+    }, i * 800); // Stagger leaf creation
+  }
+
+  // Continuously create new leaves
+  setInterval(() => {
+    this.createLeaf(fallingLeavesContainer, leafTypes);
+  }, 2000);
+}
+
+createLeaf(container, leafTypes) {
+  const leaf = document.createElement('div');
+  const leafType = leafTypes[Math.floor(Math.random() * leafTypes.length)];
+  
+  leaf.className = `leaf ${leafType}`;
+  
+  // Random properties for each leaf
+  const left = Math.random() * 100; // 0-100% across screen
+  const duration = 8 + Math.random() * 12; // 8-20 seconds
+  const delay = Math.random() * 5; // 0-5 seconds delay
+  const size = 0.5 + Math.random() * 1; // 0.5x to 1.5x size
+  
+  leaf.style.left = `${left}vw`;
+  leaf.style.animationDuration = `${duration}s, ${duration / 2}s`;
+  leaf.style.animationDelay = `${delay}s`;
+  leaf.style.fontSize = `${size}em`;
+  leaf.style.opacity = '0.7';
+  
+  container.appendChild(leaf);
+  
+  // Remove leaf after animation completes
+  setTimeout(() => {
+    if (leaf.parentNode) {
+      leaf.remove();
+    }
+  }, (duration + delay) * 1000);
+}
 
   bindEvents() {
     console.log("Binding events..."); // Debug log
@@ -661,3 +713,5 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing app...");
   window.app = new BotanicalApp();
 });
+
+
