@@ -40,7 +40,7 @@ No installation or server required!
 
 
 ## 📁 Project Structure
-
+```bash
 Botanica/
 ├── .github/
 │   └── workflows/
@@ -63,7 +63,7 @@ Botanica/
 │   └──responsive.css
 ├── index.html
 └── README.md
-
+```
 ---
 
 ## 🛠️ Technology Stack
