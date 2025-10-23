@@ -392,6 +392,46 @@ body::before {
   margin-bottom: 2.5rem;
 }
 
+/* Discover page - match dashboard/footer UI */
+#discover .page-header {
+  background: rgba(13, 40, 24, 0.95);
+  padding: 1.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(82, 183, 136, 0.12);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  margin-bottom: 1.6rem;
+}
+
+#discover .discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.4rem;
+}
+
+#discover .discovery-card {
+  background: rgba(13, 40, 24, 0.95);
+  color: var(--text);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(82, 183, 136, 0.12);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  transition: var(--transition);
+}
+
+#discover .discovery-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
+  border-color: var(--accent);
+}
+
+#discover .discovery-card h3 {
+  color: var(--text);
+}
+
+#discover .discovery-card p {
+  color: var(--text-secondary);
+}
+
 #dashboard .hero h2 {
   color: var(--text);
 }
