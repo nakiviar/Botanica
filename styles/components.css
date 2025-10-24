@@ -226,7 +226,7 @@ input:focus, select:focus, textarea:focus {
     gap: 8px;
 }
 
-.btn-primary {
+.btn-primary,.btn-secondary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);
 }
@@ -235,7 +235,10 @@ input:focus, select:focus, textarea:focus {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(45, 80, 22, 0.3);
 }
-
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(45, 80, 22, 0.3);
+}
 .btn-secondary {
     background: var(--light);
     color: var(--text);
@@ -421,4 +424,51 @@ input:focus, select:focus, textarea:focus {
     color: var(--text-light);
     margin-bottom: 2rem;
     font-size: 1.1rem;
+}
+
+.plant-form .form-group input, 
+.plant-form .form-group select, 
+.plant-form .form-group textarea {
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #32754b;
+  border-radius: var(--radius);
+  width: 100%;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plant-form .form-group input:hover, 
+.plant-form .form-group select:hover, 
+.plant-form .form-group textarea:hover {
+  border-color: var(--accent); /* Highlight on hover */
+  background-color: var(--light); /* Light background */
+}
+
+.plant-form .form-group input:focus, 
+.plant-form .form-group select:focus, 
+.plant-form .form-group textarea:focus {
+  border-color: var(--accent); /* Highlight on focus */
+  outline: none;
+  box-shadow: 0 0 5px rgba(40, 167, 69, 0.3); /* Slight glow effect */
+}
+
+.plant-form .form-group input:focus, 
+.plant-form .form-group select:focus, 
+.plant-form .form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 3px var(--accent);
+}
+
+.plant-form .form-group input,
+.plant-form .form-group textarea {
+  font-size: 1rem;
+}
+
+.plant-form .form-group select {
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid  #32754b;
+  border-radius: var(--radius); /* Rounded corners */
+  width: 100%;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
