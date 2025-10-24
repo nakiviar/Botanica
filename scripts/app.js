@@ -6,7 +6,7 @@ class BotanicalApp {
 
     this.init();
   }
-
+//updated
   init() {
     this.bindEvents();
     this.loadThemePreference(); // Add this line
