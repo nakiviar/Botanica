@@ -78,7 +78,11 @@ body {
 
 .badge {
   background: var(--accent);
+<<<<<<< HEAD
   color: #ecf0f1;
+=======
+  color: white;
+>>>>>>> 72cd6481111b2b5decd3121f387c07991b071b8e
   padding: 4px 8px;
   border-radius: 20px;
   font-size: 0.7rem;
