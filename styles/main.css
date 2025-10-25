@@ -31,14 +31,14 @@
 }
 
 [data-theme="dark"] {
-  --primary: #8bb574;
-  --secondary: #4a7c59;
-  --accent: #2d5a27;
-  --light: #2c3e50;
-  --white: #34495e;
-  --text: #ecf0f1;
-  --text-light: #bdc3c7;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --primary: #a5d6a7;      
+  --secondary: #4caf50;    
+  --accent: #2e7d32;       
+  --light: #1e1e1e;        
+  --white: #2c2c2c;       
+  --text: #f0f0f0;         
+  --text-light: #c4c4c4;   
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Reset and Base Styles */
@@ -90,12 +90,12 @@ body {
 }
 
 .logo h1 {
-  color: var(--primary);
+  color: var(--text);
   font-size: 1.8rem;
 }
 
 .badge {
-  background: var(--accent);
+  background: var(--secondary);
   color: var(--white);
   padding: 4px 8px;
   border-radius: 20px;
@@ -125,12 +125,12 @@ body {
 
 .nav-btn:hover {
   background: var(--light);
-  color: var(--primary);
+  /* color: var(--primary); */
 }
 
 .nav-btn.active {
-  background: var(--primary);
-  color: var(--white);
+  background: var(--secondary);
+  color: var(--text-light);
 }
 
 /* Main Content */
