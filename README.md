@@ -14,6 +14,7 @@ static web application for plant enthusiasts to collect, organize, and track the
 - [🛠️ Technology Stack](#️-technology-stack)
 - [🌟 Usage](#-usage)
 - [🎯 How to Use](#-how-to-use)
+- [🤝 Contributing](#-contributing)
 
 ---
 ## ✨ Features
@@ -102,4 +103,18 @@ Botanica/
 4. Start adding your plants!
 
 The app will work completely offline and store all your plant data locally in your browser. You can add, view, search, and filter your plant collection with a beautiful, responsive interface!
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions to Botanica! If you'd like to help improve the project, please see our [Contributing Guide](CONTRIBUTING.md) for information on:
+
+- How to set up your development environment
+- Coding standards and practices
+- How to submit pull requests
+- Reporting issues and suggesting features
+
+Thank you for helping to make Botanica better for all plant enthusiasts!
+
 [🔝 Back to Top](#-botanica----plant-collection-app)
