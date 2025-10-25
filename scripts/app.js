@@ -181,6 +181,8 @@ createLeaf(container, leafTypes) {
     }
   }
 
+  //Fixed Theme Change Error
+
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute("data-theme");
     const themeToggle = document.getElementById("theme-toggle");
