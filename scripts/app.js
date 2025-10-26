@@ -162,6 +162,16 @@ createLeaf(container, leafTypes) {
       });
     }
 
+    document.getElementById("modal-content").addEventListener("click", (e) => {
+      if (e.target.closest("#modal-delete-btn")) {
+        // Get the ID from the button itself
+        const plantId = e.target.closest("#modal-delete-btn").dataset.plantId;
+        if (plantId) {
+          this.deletePlant(plantId);
+        }
+      }
+    });
+  
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -512,21 +522,13 @@ createLeaf(container, leafTypes) {
                     : ""
                 }
                 <div class="form-actions">
-                    <button class="btn-secondary" id="modal-delete-btn">
+                    <button class="btn-secondary" id="modal-delete-btn" data-plant-id="${plant.id}">
                         <i class="fas fa-trash"></i>
                         Delete Plant
                     </button>
                 </div>
             </div>
         `;
-
-    // Add event listener to delete button
-    const deleteBtn = document.getElementById("modal-delete-btn");
-    if (deleteBtn) {
-      deleteBtn.addEventListener("click", () => {
-        this.deletePlant(plant.id);
-      });
-    }
 
     this.showModal();
   }
