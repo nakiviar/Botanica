@@ -79,12 +79,15 @@ createLeaf(container, leafTypes) {
     });
 
     // Navigation - Use event delegation
-    document.querySelector(".nav").addEventListener("click", (e) => {
+   document.querySelector(".nav").addEventListener("click", (e) => {
       if (e.target.closest(".nav-btn")) {
         const btn = e.target.closest(".nav-btn");
         const page = btn.dataset.page;
-        console.log("Navigation clicked:", page); // Debug log
-        this.showPage(page);
+
+        if (page) {
+          console.log("Navigation clicked:", page);
+          this.showPage(page);
+        }
       }
     });
 
