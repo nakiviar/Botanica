@@ -79,7 +79,7 @@ createLeaf(container, leafTypes) {
     });
 
     // Navigation - Use event delegation
-    document.querySelector(".nav").addEventListener("click", (e) => {
+   document.querySelector(".nav").addEventListener("click", (e) => {
       if (e.target.closest(".nav-btn")) {
         const btn = e.target.closest(".nav-btn");
         const page = btn.dataset.page;
@@ -183,6 +183,8 @@ createLeaf(container, leafTypes) {
       }
     }
   }
+
+  //Fixed Theme Change Error
 
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute("data-theme");
