@@ -1,74 +1,71 @@
 class BotanicalApp {
   constructor() {
     this.plantManager = new PlantManager();
+    this.wishlistManager = new WishlistManager();
     this.imageHandler = new ImageHandler();
     this.currentPage = "dashboard";
 
     this.init();
   }
-//updated
+
   init() {
     this.bindEvents();
-    this.loadThemePreference(); // Add this line
+    this.loadThemePreference();
     this.showPage("dashboard");
     this.updateDashboard();
 
     this.createFallingLeaves();
   }
 
+  createFallingLeaves() {
+    const fallingLeavesContainer = document.createElement('div');
+    fallingLeavesContainer.className = 'falling-leaves';
+    document.body.appendChild(fallingLeavesContainer);
 
-  // Add this method to your BotanicalApp class
-createFallingLeaves() {
-  const fallingLeavesContainer = document.createElement('div');
-  fallingLeavesContainer.className = 'falling-leaves';
-  document.body.appendChild(fallingLeavesContainer);
+    const leafTypes = ['leaf-type-1', 'leaf-type-2', 'leaf-type-3', 'leaf-type-4', 'leaf-type-5'];
 
-  const leafTypes = ['leaf-type-1', 'leaf-type-2', 'leaf-type-3', 'leaf-type-4', 'leaf-type-5'];
-  
-  // Create 15 leaves for a gentle effect
-  for (let i = 0; i < 15; i++) {
-    setTimeout(() => {
+    // Create 15 leaves for a gentle effect
+    for (let i = 0; i < 15; i++) {
+      setTimeout(() => {
+        this.createLeaf(fallingLeavesContainer, leafTypes);
+      }, i * 800); // Stagger leaf creation
+    }
+
+    // Continuously create new leaves
+    setInterval(() => {
       this.createLeaf(fallingLeavesContainer, leafTypes);
-    }, i * 800); // Stagger leaf creation
+    }, 2000);
   }
 
-  // Continuously create new leaves
-  setInterval(() => {
-    this.createLeaf(fallingLeavesContainer, leafTypes);
-  }, 2000);
-}
+  createLeaf(container, leafTypes) {
+    const leaf = document.createElement('div');
+    const leafType = leafTypes[Math.floor(Math.random() * leafTypes.length)];
 
-createLeaf(container, leafTypes) {
-  const leaf = document.createElement('div');
-  const leafType = leafTypes[Math.floor(Math.random() * leafTypes.length)];
-  
-  leaf.className = `leaf ${leafType}`;
-  
-  // Random properties for each leaf
-  const left = Math.random() * 100; // 0-100% across screen
-  const duration = 8 + Math.random() * 12; // 8-20 seconds
-  const delay = Math.random() * 5; // 0-5 seconds delay
-  const size = 0.5 + Math.random() * 1; // 0.5x to 1.5x size
-  
-  leaf.style.left = `${left}vw`;
-  leaf.style.animationDuration = `${duration}s, ${duration / 2}s`;
-  leaf.style.animationDelay = `${delay}s`;
-  leaf.style.fontSize = `${size}em`;
-  leaf.style.opacity = '0.7';
-  
-  container.appendChild(leaf);
-  
-  // Remove leaf after animation completes
-  setTimeout(() => {
-    if (leaf.parentNode) {
-      leaf.remove();
-    }
-  }, (duration + delay) * 1000);
-}
+    leaf.className = `leaf ${leafType}`;
+
+    // Random properties for each leaf
+    const left = Math.random() * 100; // 0-100% across screen
+    const duration = 8 + Math.random() * 12; // 8-20 seconds
+    const delay = Math.random() * 5; // 0-5 seconds delay
+    const size = 0.5 + Math.random() * 1; // 0.5x to 1.5x size
+
+    leaf.style.left = `${left}vw`;
+    leaf.style.animationDuration = `${duration}s, ${duration / 2}s`;
+    leaf.style.animationDelay = `${delay}s`;
+    leaf.style.fontSize = `${size}em`;
+    leaf.style.opacity = '0.7';
+
+    container.appendChild(leaf);
+
+    // Remove leaf after animation completes
+    setTimeout(() => {
+      if (leaf.parentNode) {
+        leaf.remove();
+      }
+    }, (duration + delay) * 1000);
+  }
 
   bindEvents() {
-    console.log("Binding events..."); // Debug log
-
     // Footer navigation links
     document.querySelectorAll(".footer-nav-link").forEach((link) => {
       link.addEventListener("click", (e) => {
@@ -79,24 +76,23 @@ createLeaf(container, leafTypes) {
     });
 
     // Navigation - Use event delegation
-   document.querySelector(".nav").addEventListener("click", (e) => {
+    document.querySelector(".nav").addEventListener("click", (e) => {
       if (e.target.closest(".nav-btn")) {
         const btn = e.target.closest(".nav-btn");
         const page = btn.dataset.page;
 
         if (page) {
-          console.log("Navigation clicked:", page);
           this.showPage(page);
         }
       }
     });
 
-    // Botanica logo click - Add this section
+    // Botanica logo click to return to dashboard
     document.querySelector(".logo").addEventListener("click", () => {
       this.showPage("dashboard");
     });
 
-    // Theme toggle - Add this
+    // Theme toggle
     const themeToggle = document.getElementById("theme-toggle");
     if (themeToggle) {
       themeToggle.addEventListener("click", () => {
@@ -111,12 +107,21 @@ createLeaf(container, leafTypes) {
       });
     }
 
-    // Plant form
+    // Plant form submission
     const plantForm = document.getElementById("plant-form");
     if (plantForm) {
       plantForm.addEventListener("submit", (e) => {
         e.preventDefault();
         this.handlePlantSubmit();
+      });
+    }
+
+    // Wishlist form submission
+    const wishlistForm = document.getElementById("wishlist-form");
+    if (wishlistForm) {
+      wishlistForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleWishlistSubmit();
       });
     }
 
@@ -128,7 +133,7 @@ createLeaf(container, leafTypes) {
       });
     }
 
-    // Search and filter
+    // Search and filter controls
     const filterType = document.getElementById("filter-type");
     if (filterType) {
       filterType.addEventListener("change", (e) => {
@@ -145,7 +150,7 @@ createLeaf(container, leafTypes) {
       });
     }
 
-    // Modal
+    // Modal close events
     const closeModal = document.getElementById("close-modal");
     if (closeModal) {
       closeModal.addEventListener("click", () => {
@@ -162,7 +167,7 @@ createLeaf(container, leafTypes) {
       });
     }
 
-    // Keyboard shortcuts
+    // Keyboard shortcuts (Escape key)
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.hideModal();
@@ -170,7 +175,6 @@ createLeaf(container, leafTypes) {
     });
   }
 
-  // Add these new methods for theme handling
   loadThemePreference() {
     const savedTheme = localStorage.getItem("theme");
     const themeToggle = document.getElementById("theme-toggle");
@@ -183,8 +187,6 @@ createLeaf(container, leafTypes) {
       }
     }
   }
-
-  //Fixed Theme Change Error
 
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute("data-theme");
@@ -208,16 +210,17 @@ createLeaf(container, leafTypes) {
     );
   }
 
-  // Rest of your existing methods remain exactly the same
+  /**
+   * Shows a specific page and runs page-specific initialization logic.
+   * @param {string} pageName - The ID of the page element to show.
+   */
   showPage(pageName) {
-    console.log("Showing page:", pageName); // Debug log
-
-    // Update navigation
+    // Update navigation buttons
     document.querySelectorAll(".nav-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.page === pageName);
     });
 
-    // Hide all pages first
+    // Hide all pages
     document.querySelectorAll(".page").forEach((page) => {
       page.classList.remove("active");
     });
@@ -236,15 +239,22 @@ createLeaf(container, leafTypes) {
         case "collection":
           this.renderCollection();
           break;
-        case "add-plant":
-          // Ensure image handler is initialized
+        case "wishlist":
+          this.wishlistManager.renderWishlist(this.wishlistManager.getWishes());
+          // Initialize image handler for the wishlist form
           if (this.imageHandler) {
+            this.imageHandler.initHandler("wish-upload-area", "wish-image", "wish-image-preview", "wish-remove-image", "wish-preview-img");
             this.imageHandler.clearImage();
           }
-          const plantForm = document.getElementById("plant-form");
-          if (plantForm) {
-            plantForm.reset();
+          document.getElementById("wishlist-form")?.reset();
+          break;
+        case "add-plant":
+          // Initialize image handler for the add plant form
+          if (this.imageHandler) {
+            this.imageHandler.initHandler("upload-area", "plant-image", "image-preview", "remove-image", "preview-img");
+            this.imageHandler.clearImage();
           }
+          document.getElementById("plant-form")?.reset();
           break;
       }
     } else {
@@ -379,16 +389,16 @@ createLeaf(container, leafTypes) {
     return `
             <div class="plant-card" data-plant-id="${plant.id}">
                 <img src="${imageSrc}" 
-                     alt="${plant.name}" 
-                     class="plant-image"
-                     onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+                    alt="${plant.name}" 
+                    class="plant-image"
+                    onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
                 <div class="plant-info">
                     <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
                     ${
                       plant.species
                         ? `<p class="plant-species">${this.escapeHtml(
-                            plant.species
-                          )}</p>`
+                              plant.species
+                            )}</p>`
                         : ""
                     }
                     <div class="plant-meta">
@@ -450,6 +460,54 @@ createLeaf(container, leafTypes) {
     }
   }
 
+  /**
+   * Handles the submission of the wishlist form.
+   */
+  async handleWishlistSubmit() {
+    // Re-initialize image handler for the wishlist form
+    this.imageHandler.initHandler("wish-upload-area", "wish-image", "wish-image-preview", "wish-remove-image", "wish-preview-img");
+
+    // Validate image (it's optional)
+    const imageValidation = this.imageHandler.validateImage();
+    if (!imageValidation.valid) {
+      this.showNotification(imageValidation.message, "error");
+      return;
+    }
+
+    // Validate form
+    const wishName = document.getElementById("wish-name");
+    if (!wishName || !wishName.value.trim()) {
+      this.showNotification("Please enter a plant name for your wish", "error");
+      return;
+    }
+
+    const wishLink = document.getElementById("wish-link");
+
+    // Get form data
+    const wishData = {
+      name: wishName.value.trim(),
+      note: document.getElementById("wish-note").value.trim(),
+      link: wishLink?.value.trim() || "",
+      image: this.imageHandler.getImageData(),
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      this.wishlistManager.addWish(wishData);
+
+      this.showNotification("Wish added to your list!", "success");
+
+      // Reset form and update view
+      this.imageHandler.clearImage();
+      document.getElementById("wishlist-form").reset();
+      this.wishlistManager.renderWishlist(this.wishlistManager.getWishes());
+
+    } catch (error) {
+      this.showNotification("Error adding wish: " + error.message, "error");
+    }
+  }
+
+
   showPlantDetail(plantId) {
     const plant = this.plantManager.getPlantById(plantId);
     if (!plant) {
@@ -475,16 +533,16 @@ createLeaf(container, leafTypes) {
             <div class="plant-detail">
                 <div class="detail-header">
                     <img src="${imageSrc}" 
-                         alt="${plant.name}" 
-                         class="detail-image"
-                         onerror="this.src='https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿'">
+                        alt="${plant.name}" 
+                        class="detail-image"
+                        onerror="this.src='https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿'">
                     <div class="detail-info">
                         <h2>${this.escapeHtml(plant.name)}</h2>
                         ${
                           plant.species
                             ? `<p class="detail-species">${this.escapeHtml(
-                                plant.species
-                              )}</p>`
+                                  plant.species
+                                )}</p>`
                             : ""
                         }
                         <div class="detail-meta">
@@ -531,6 +589,80 @@ createLeaf(container, leafTypes) {
     this.showModal();
   }
 
+  /**
+   * Shows a modal detailing a single wishlist item.
+   * @param {string} wishId - The ID of the wishlist item.
+   */
+  showWishDetail(wishId) {
+    const wish = this.wishlistManager.getWishById(wishId);
+    if (!wish) {
+      this.showNotification("Wishlist item not found", "error");
+      return;
+    }
+
+    const modalContent = document.getElementById("modal-content");
+    if (!modalContent) return;
+
+    // Use placeholder if no image
+    const imageSrc =
+      wish.image ||
+      "https://via.placeholder.com/400x300/f39c12/ffffff?text=⭐";
+
+    // HTML for the Wishlist Detail Modal
+    modalContent.innerHTML = `
+      <div class="wish-detail">
+        <div class="detail-header">
+          <img src="${imageSrc}" 
+            alt="${this.escapeHtml(wish.name)}" 
+            class="detail-image"
+            onerror="this.src='https://via.placeholder.com/400x300/f39c12/ffffff?text=⭐'">
+          <div class="detail-info">
+            <h2>${this.escapeHtml(wish.name)}</h2>
+            <p><small>Added: ${new Date(
+              wish.createdAt
+            ).toLocaleDateString()}</small></p>
+            ${
+              wish.link
+                ? `<a href="${this.escapeHtml(wish.link)}" target="_blank" class="btn-primary modal-link"><i class="fas fa-shopping-cart"></i> View Store</a>`
+                : ""
+            }
+          </div>
+        </div>
+        ${
+          wish.note
+            ? `
+          <div class="detail-notes">
+            <h3>Notes</h3>
+            <p>${this.escapeHtml(wish.note)}</p>
+          </div>
+        `
+            : ""
+        }
+        <div class="form-actions">
+          <button class="btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
+            <i class="fas fa-edit"></i>
+            Edit Wish (Future)
+          </button>
+          <button class="btn-secondary" id="modal-delete-wish-btn" data-wish-id="${wish.id}">
+            <i class="fas fa-trash"></i>
+            Delete Wish
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Bind dynamic events inside the modal
+    document.getElementById("modal-delete-wish-btn")?.addEventListener("click", () => {
+      this.deleteWish(wish.id);
+    });
+
+    document.getElementById("modal-edit-wish-btn")?.addEventListener("click", () => {
+      this.showNotification("Edit functionality is coming soon!", "info");
+    });
+
+    this.showModal();
+  }
+
   deletePlant(plantId) {
     if (
       confirm(
@@ -549,6 +681,28 @@ createLeaf(container, leafTypes) {
       }
     }
   }
+
+  /**
+   * Deletes a wishlist item by ID and updates the UI.
+   * @param {string} wishId - The ID of the wishlist item.
+   */
+  deleteWish(wishId) {
+    if (
+      confirm(
+        "Are you sure you want to delete this wishlist item? This action cannot be undone."
+      )
+    ) {
+      this.wishlistManager.deleteWish(wishId);
+      this.hideModal();
+      this.showNotification("Wishlist item removed", "success");
+
+      // Update wishlist view
+      if (this.currentPage === "wishlist") {
+        this.wishlistManager.renderWishlist(this.wishlistManager.getWishes());
+      }
+    }
+  }
+
 
   showModal() {
     const modal = document.getElementById("plant-modal");
@@ -715,8 +869,5 @@ document.head.appendChild(style);
 
 // Initialize app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing app...");
   window.app = new BotanicalApp();
 });
-
-
