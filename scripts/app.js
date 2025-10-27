@@ -167,13 +167,10 @@ class BotanicalApp {
       });
     }
 
+    // Handle delete clicks within modal content
     document.getElementById("modal-content").addEventListener("click", (e) => {
       if (e.target.closest("#modal-delete-btn")) {
-        // Get the ID from the button itself
-        const plantId = e.target.closest("#modal-delete-btn").dataset.plantId;
-        if (plantId) {
-          this.deletePlant(plantId);
-        }
+        // Delegated deletion is handled inside bindPlantDetailEvents now
       }
     });
   
@@ -238,8 +235,8 @@ class BotanicalApp {
     // Show target page
     const targetPage = document.getElementById(pageName);
     if (targetPage) {
-      targetPage.classList.add("active");
       this.currentPage = pageName;
+      targetPage.classList.add("active");
 
       // Page-specific initialization
       switch (pageName) {
@@ -517,7 +514,10 @@ class BotanicalApp {
     }
   }
 
-
+  /**
+   * Renders the detail view for a plant, including the Journal tab.
+   * @param {string} plantId - The ID of the plant.
+   */
   showPlantDetail(plantId) {
     const plant = this.plantManager.getPlantById(plantId);
     if (!plant) {
@@ -535,12 +535,11 @@ class BotanicalApp {
     if (!modalContent) return;
 
     // Use placeholder if no image
-    const imageSrc =
-      plant.image ||
-      "https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿";
-
+    const imageSrc = plant.image || "https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿";
+    
+    // --- Modal Structure with Tabs ---
     modalContent.innerHTML = `
-            <div class="plant-detail">
+            <div class="plant-detail-container" data-plant-id="${plantId}">
                 <div class="detail-header">
                     <img src="${imageSrc}" 
                         alt="${plant.name}" 
@@ -548,47 +547,212 @@ class BotanicalApp {
                         onerror="this.src='https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿'">
                     <div class="detail-info">
                         <h2>${this.escapeHtml(plant.name)}</h2>
-                        ${
-                          plant.species
-                            ? `<p class="detail-species">${this.escapeHtml(
-                                  plant.species
-                                )}</p>`
-                            : ""
-                        }
+                        ${plant.species ? `<p class="detail-species">${this.escapeHtml(plant.species)}</p>` : ""}
                         <div class="detail-meta">
                             <span class="detail-type">${plant.type}</span>
                             <span class="detail-light">
-                                <i class="${
-                                  lightIcons[plant.light] || "fas fa-sun"
-                                }"></i>
-                                ${plant.light} Light
+                                <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i> ${plant.light} Light
                             </span>
                         </div>
-                        <p><small>Added: ${new Date(
-                          plant.createdAt
-                        ).toLocaleDateString()}</small></p>
+                        <p><small>Added: ${new Date(plant.createdAt).toLocaleDateString()}</small></p>
                     </div>
                 </div>
-                ${
-                  plant.notes
-                    ? `
-                    <div class="detail-notes">
-                        <h3>Care Notes</h3>
-                        <p>${this.escapeHtml(plant.notes)}</p>
+
+                <div class="detail-tabs">
+                    <button class="tab-btn active" data-tab="info">Info</button>
+                    <button class="tab-btn" data-tab="journal">Journal (${plant.journal?.length || 0})</button>
+                </div>
+
+                <div id="tab-info" class="tab-content active">
+                    ${plant.notes ? `
+                        <div class="detail-notes">
+                            <h3>Care Notes</h3>
+                            <p>${this.escapeHtml(plant.notes)}</p>
+                        </div>` : `<p class="empty-state-small">No specific care notes recorded.</p>`
+                    }
+                    <div class="form-actions">
+                        <button class="btn-secondary" id="modal-delete-btn" data-plant-id="${plantId}">
+                            <i class="fas fa-trash"></i> Delete Plant
+                        </button>
                     </div>
-                `
-                    : ""
-                }
-                <div class="form-actions">
-                    <button class="btn-secondary" id="modal-delete-btn" data-plant-id="${plant.id}">
-                        <i class="fas fa-trash"></i>
-                        Delete Plant
-                    </button>
+                </div>
+
+                <div id="tab-journal" class="tab-content">
+                    <h3>New Journal Entry</h3>
+                    <form id="journal-form" class="journal-form" data-plant-id="${plantId}">
+                        <div class="form-group">
+                            <label for="journal-note">Observation/Note *</label>
+                            <textarea id="journal-note" rows="2" required placeholder="New leaf, watering, pest notice, etc."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="journal-image">Optional Photo Progress</label>
+                            <div class="image-upload">
+                                <div class="upload-area" id="journal-upload-area">
+                                    <i class="fas fa-camera"></i>
+                                    <p>Click to upload image</p>
+                                    <input type="file" id="journal-image" accept="image/*" hidden />
+                                </div>
+                                <div class="image-preview hidden" id="journal-image-preview">
+                                    <img id="journal-preview-img" src="" alt="Preview" />
+                                    <button type="button" id="journal-remove-image" class="btn-remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions journal-actions">
+                            <small class="date-display">Date: ${new Date().toLocaleDateString()}</small>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-pen"></i> Add Entry
+                            </button>
+                        </div>
+                    </form>
+
+                    <h3 class="journal-history-header">History</h3>
+                    <div id="journal-entries-container" class="journal-entries-container">
+                        ${this.renderJournalHistory(plant.journal || [])}
+                    </div>
                 </div>
             </div>
         `;
+        
+        // Bind all necessary dynamic events
+        this.bindPlantDetailEvents(plantId);
+        
+        // Initialize image handler for the journal form
+        if (this.imageHandler) {
+            this.imageHandler.initHandler("journal-upload-area", "journal-image", "journal-image-preview", "journal-remove-image", "journal-preview-img");
+            this.imageHandler.clearImage();
+        }
 
-    this.showModal();
+        this.showModal();
+  }
+
+  /**
+   * Creates the HTML for the journal entries list.
+   * @param {Array<object>} journal - The array of entries.
+   * @returns {string} HTML markup.
+   */
+  renderJournalHistory(journal) {
+    if (journal.length === 0) {
+        return `<div class="empty-state-small">No journal entries recorded yet.</div>`;
+    }
+    
+    return journal.map(entry => `
+            <div class="journal-card" data-entry-id="${entry.id}">
+                <div class="journal-header">
+                    <span class="journal-date">${new Date(entry.date).toLocaleDateString()}</span>
+                    <button class="btn-delete-entry" data-entry-id="${entry.id}" aria-label="Delete entry">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <p class="journal-note">${this.escapeHtml(entry.note)}</p>
+                ${entry.image ? `
+                    <div class="journal-image-preview">
+                        <img src="${entry.image}" alt="Progress photo">
+                    </div>` : ''}
+            </div>
+        `).join('');
+  }
+
+  /**
+   * Binds events for the plant detail modal (tabs, form submission, delete).
+   * @param {string} plantId - The ID of the plant currently displayed.
+   */
+  bindPlantDetailEvents(plantId) {
+    // 1. Tab switching logic
+    document.querySelectorAll('.detail-tabs .tab-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            document.querySelectorAll('.detail-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            e.target.classList.add('active');
+            const targetId = e.target.getAttribute('data-tab');
+            document.getElementById(`tab-${targetId}`).classList.add('active');
+        });
+    });
+
+    // 2. Plant Delete Button (from Info tab)
+    document.getElementById("modal-delete-btn")?.addEventListener("click", () => {
+        this.deletePlant(plantId);
+    });
+
+    // 3. Journal Form Submission
+    document.getElementById("journal-form")?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleJournalSubmit(plantId);
+    });
+
+    // 4. Journal Entry Delete Buttons (using delegation on the container)
+    document.getElementById("journal-entries-container")?.addEventListener("click", (e) => {
+        const deleteBtn = e.target.closest('.btn-delete-entry');
+        if (deleteBtn) {
+            const entryId = deleteBtn.dataset.entryId;
+            this.deleteJournalEntry(plantId, entryId);
+        }
+    });
+  }
+
+  /**
+   * Handles the submission of a new journal entry.
+   * @param {string} plantId - The ID of the plant.
+   */
+  async handleJournalSubmit(plantId) {
+    // Re-initialize image handler to ensure it targets the journal form elements
+    this.imageHandler.initHandler("journal-upload-area", "journal-image", "journal-image-preview", "journal-remove-image", "journal-preview-img");
+
+    const noteInput = document.getElementById("journal-note");
+    const imageValidation = this.imageHandler.validateImage();
+    
+    if (!noteInput.value.trim()) {
+      this.showNotification("Journal note cannot be empty.", "error");
+      return;
+    }
+    if (!imageValidation.valid) {
+      this.showNotification(imageValidation.message, "error");
+      return;
+    }
+
+    const entryData = {
+      note: noteInput.value.trim(),
+      image: this.imageHandler.getImageData(),
+    };
+
+    // Add entry via PlantManager
+    const success = this.plantManager.addJournalEntry(plantId, entryData);
+
+    if (success) {
+      this.showNotification("Journal entry added!", "success");
+      
+      // Reset form and UI
+      noteInput.value = '';
+      this.imageHandler.clearImage();
+      
+      // Re-render the modal to show the new entry and updated count
+      this.showPlantDetail(plantId); 
+    } else {
+      this.showNotification("Error saving journal entry.", "error");
+    }
+  }
+
+  /**
+   * Deletes a journal entry and re-renders the detail modal.
+   * @param {string} plantId - The ID of the plant.
+   * @param {string} entryId - The ID of the entry to delete.
+   */
+  deleteJournalEntry(plantId, entryId) {
+    if (confirm("Are you sure you want to delete this journal entry?")) {
+      const success = this.plantManager.deleteJournalEntry(plantId, entryId);
+      if (success) {
+        this.showNotification("Journal entry deleted.", "success");
+        // Re-render the modal to show the updated list
+        this.showPlantDetail(plantId);
+      } else {
+        this.showNotification("Error deleting journal entry.", "error");
+      }
+    }
   }
 
   /**
@@ -612,46 +776,46 @@ class BotanicalApp {
 
     // HTML for the Wishlist Detail Modal
     modalContent.innerHTML = `
-      <div class="wish-detail">
-        <div class="detail-header">
-          <img src="${imageSrc}" 
-            alt="${this.escapeHtml(wish.name)}" 
-            class="detail-image"
-            onerror="this.src='https://via.placeholder.com/400x300/f39c12/ffffff?text=⭐'">
-          <div class="detail-info">
-            <h2>${this.escapeHtml(wish.name)}</h2>
-            <p><small>Added: ${new Date(
-              wish.createdAt
-            ).toLocaleDateString()}</small></p>
-            ${
-              wish.link
-                ? `<a href="${this.escapeHtml(wish.link)}" target="_blank" class="btn-primary modal-link"><i class="fas fa-shopping-cart"></i> View Store</a>`
-                : ""
-            }
-          </div>
-        </div>
-        ${
-          wish.note
-            ? `
-          <div class="detail-notes">
-            <h3>Notes</h3>
-            <p>${this.escapeHtml(wish.note)}</p>
-          </div>
-        `
-            : ""
-        }
-        <div class="form-actions">
-          <button class="btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
-            <i class="fas fa-edit"></i>
-            Edit Wish (Future)
-          </button>
-          <button class="btn-secondary" id="modal-delete-wish-btn" data-wish-id="${wish.id}">
-            <i class="fas fa-trash"></i>
-            Delete Wish
-          </button>
-        </div>
-      </div>
-    `;
+            <div class="wish-detail">
+                <div class="detail-header">
+                    <img src="${imageSrc}" 
+                        alt="${this.escapeHtml(wish.name)}" 
+                        class="detail-image"
+                        onerror="this.src='https://via.placeholder.com/400x300/f39c12/ffffff?text=⭐'">
+                    <div class="detail-info">
+                        <h2>${this.escapeHtml(wish.name)}</h2>
+                        <p><small>Added: ${new Date(
+                            wish.createdAt
+                        ).toLocaleDateString()}</small></p>
+                        ${
+                          wish.link
+                            ? `<a href="${this.escapeHtml(wish.link)}" target="_blank" class="btn-primary modal-link"><i class="fas fa-shopping-cart"></i> View Store</a>`
+                            : ""
+                        }
+                    </div>
+                </div>
+                ${
+                  wish.note
+                    ? `
+                    <div class="detail-notes">
+                        <h3>Notes</h3>
+                        <p>${this.escapeHtml(wish.note)}</p>
+                    </div>
+                `
+                    : ""
+                }
+                <div class="form-actions">
+                    <button class="btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
+                        <i class="fas fa-edit"></i>
+                        Edit Wish (Future)
+                    </button>
+                    <button class="btn-secondary" id="modal-delete-wish-btn" data-wish-id="${wish.id}">
+                        <i class="fas fa-trash"></i>
+                        Delete Wish
+                    </button>
+                </div>
+            </div>
+        `;
 
     // Bind dynamic events inside the modal
     document.getElementById("modal-delete-wish-btn")?.addEventListener("click", () => {
@@ -704,7 +868,6 @@ class BotanicalApp {
       }
     }
   }
-
 
   showModal() {
     const modal = document.getElementById("plant-modal");
@@ -860,7 +1023,7 @@ style.textContent = `
     
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        to { transform: translateY(0); }
     }
     
     .hidden {
