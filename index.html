@@ -30,6 +30,10 @@
             <i class="fas fa-leaf"></i>
             <span>My Plants</span>
           </button>
+          <button class="nav-btn" data-page="wishlist">
+            <i class="fas fa-heart"></i>
+            <span>Wishlist</span>
+          </button>
           <button class="nav-btn" data-page="add-plant">
             <i class="fas fa-plus"></i>
             <span>Add Plant</span>
@@ -42,7 +46,6 @@
             <i class="fas fa-info-circle"></i>
             <span>About</span>
           </button>
-          <!-- Add theme toggle button -->
           <button class="nav-btn" id="theme-toggle">
             <i class="fas fa-moon"></i>
             <span>Dark Mode</span>
@@ -53,7 +56,6 @@
 
     <main class="main">
       <div class="container">
-        <!-- Dashboard Page -->
         <div id="dashboard" class="page active">
           <div class="hero">
             <h2>Welcome to Your Digital Garden</h2>
@@ -80,12 +82,10 @@
           <div class="recent-plants">
             <h3>Recently Added</h3>
             <div id="recent-plants-grid" class="plants-grid">
-              <!-- Dynamic content -->
-            </div>
+              </div>
           </div>
         </div>
 
-        <!-- Collection Page -->
         <div id="collection" class="page">
           <div class="page-header">
             <h2>My Plant Collection</h2>
@@ -112,12 +112,64 @@
             </div>
             </div>
           <div id="collection-grid" class="plants-grid">
-            <!-- Dynamic content -->
-             
+            </div>
+        </div>
+
+        <div id="wishlist" class="page">
+          <div class="page-header">
+            <h2>My Wishlist ✨</h2>
+            <p>Plants I want to buy or collect in the future.</p>
+          </div>
+
+          <form id="wishlist-form" class="plant-form">
+            <h3>Add New Wish</h3>
+            <div class="form-group">
+              <label for="wish-name">Plant Name *</label>
+              <input type="text" id="wish-name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="wish-note">Short Note (e.g., price, care tip, location)</label>
+              <textarea id="wish-note" rows="2"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="wish-link">Online Store/Reference Link</label>
+              <input type="url" id="wish-link" placeholder="https://store-link.com" />
+            </div>
+
+            <div class="form-group">
+              <label for="wish-image">Optional Image</label>
+              <div class="image-upload">
+                <div class="upload-area" id="wish-upload-area">
+                  <i class="fas fa-camera"></i>
+                  <p>Click to upload image</p>
+                  <input type="file" id="wish-image" accept="image/*" hidden />
+                </div>
+                <div class="image-preview hidden" id="wish-image-preview">
+                  <img id="wish-preview-img" src="" alt="Preview" />
+                  <button type="button" id="wish-remove-image" class="btn-remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-bookmark"></i>
+                Add to Wishlist
+              </button>
+            </div>
+          </form>
+
+          <div class="wishlist-items-section">
+            <h3>My Saved Wishes</h3>
+            <div id="wishlist-grid" class="plants-grid">
+              </div>
           </div>
         </div>
 
-        <!-- Add Plant Page -->
         <div id="add-plant" class="page">
           <div class="page-header">
             <h2>Add New Plant</h2>
@@ -192,14 +244,12 @@
           </form>
         </div>
 
-        <!-- About Page -->
         <div id="about" class="page">
           <div class="page-header">
             <h2>About Botanica</h2>
             <p>Your digital companion in the world of plants</p>
           </div>
           <div class="about-content">
-            <!-- Hero Section -->
             <div class="about-hero">
               <div class="about-hero-content">
                 <h2>Cultivating Green Connections</h2>
@@ -221,7 +271,6 @@
               </div>
             </div>
 
-            <!-- Mission Section -->
             <div class="about-section mission-section">
               <div class="section-header">
                 <i class="fas fa-bullseye"></i>
@@ -257,7 +306,6 @@
               </div>
             </div>
 
-            <!-- Features Section -->
             <div class="about-section features-section">
               <div class="section-header">
                 <i class="fas fa-star"></i>
@@ -311,7 +359,6 @@
               </div>
             </div>
 
-            <!-- Story Section -->
             <div class="about-section story-section">
               <div class="section-header">
                 <i class="fas fa-book-open"></i>
@@ -342,7 +389,6 @@
               </div>
             </div>
 
-            <!-- Team Section -->
             <div class="about-section team-section">
               <div class="section-header">
                 <i class="fas fa-heart"></i>
@@ -375,7 +421,6 @@
           </div>
         </div>
 
-        <!-- Discover Page -->
         <div id="discover" class="page">
           <div class="page-header">
             <h2>Plant Discovery</h2>
@@ -413,19 +458,16 @@
       </div>
     </main>
 
-    <!-- Plant Detail Modal -->
     <div id="plant-modal" class="modal hidden">
       <div class="modal-content">
         <button id="close-modal" class="modal-close">
           <i class="fas fa-times"></i>
         </button>
         <div id="modal-content">
-          <!-- Dynamic content -->
-        </div>
+          </div>
       </div>
     </div>
 
-    <!-- Footer Section -->
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
@@ -469,6 +511,14 @@
                   class="footer-nav-link"
                   data-page="collection"
                   >My Plants</a
+                >
+              </li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="wishlist"
+                  >Wishlist</a
                 >
               </li>
               <li>
@@ -549,40 +599,36 @@
 
     <script src="scripts/image-handler.js"></script>
     <script src="scripts/plant-manager.js"></script>
+    <script src="scripts/wishlist-manager.js"></script>
     <script src="scripts/app.js"></script>
 
 
-    <!-- Beautiful Growing Plant Animation -->
-<div class="growing-plant">
-  <div class="plant-pot"></div>
-  <div class="plant-stem"></div>
-  
-  <!-- Leaves -->
-  <div class="main-leaf leaf-1" style="--rotation: -25deg"></div>
-  <div class="main-leaf leaf-2" style="--rotation: 15deg"></div>
-  <div class="main-leaf leaf-3" style="--rotation: -15deg"></div>
-  <div class="main-leaf leaf-4" style="--rotation: 20deg"></div>
-  <div class="main-leaf leaf-5" style="--rotation: -10deg"></div>
-  
-  <!-- Flower -->
-  <div class="flower-bud"></div>
-  <div class="flower">
-    <div class="flower-petal petal-1"></div>
-    <div class="flower-petal petal-2"></div>
-    <div class="flower-petal petal-3"></div>
-    <div class="flower-petal petal-4"></div>
-    <div class="flower-petal petal-5"></div>
-    <div class="flower-petal petal-6"></div>
-    <div class="flower-center"></div>
-  </div>
-  
-  <!-- Sparkles -->
-  <div class="plant-sparkle sparkle-1"></div>
-  <div class="plant-sparkle sparkle-2"></div>
-  <div class="plant-sparkle sparkle-3"></div>
-</div>
+    <div class="growing-plant">
+      <div class="plant-pot"></div>
+      <div class="plant-stem"></div>
+      
+      <div class="main-leaf leaf-1" style="--rotation: -25deg"></div>
+      <div class="main-leaf leaf-2" style="--rotation: 15deg"></div>
+      <div class="main-leaf leaf-3" style="--rotation: -15deg"></div>
+      <div class="main-leaf leaf-4" style="--rotation: 20deg"></div>
+      <div class="main-leaf leaf-5" style="--rotation: -10deg"></div>
+      
+      <div class="flower-bud"></div>
+      <div class="flower">
+        <div class="flower-petal petal-1"></div>
+        <div class="flower-petal petal-2"></div>
+        <div class="flower-petal petal-3"></div>
+        <div class="flower-petal petal-4"></div>
+        <div class="flower-petal petal-5"></div>
+        <div class="flower-petal petal-6"></div>
+        <div class="flower-center"></div>
+      </div>
+      
+      <div class="plant-sparkle sparkle-1"></div>
+      <div class="plant-sparkle sparkle-2"></div>
+      <div class="plant-sparkle sparkle-3"></div>
+    </div>
 
-<!-- Falling Leaves Background -->
-<div class="falling-leaves" id="falling-leaves"></div>
+    <div class="falling-leaves" id="falling-leaves"></div>
   </body>
 </html>
