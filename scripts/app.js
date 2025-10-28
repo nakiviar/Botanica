@@ -391,7 +391,7 @@ class BotanicalApp {
     // Use placeholder if no image
     const imageSrc =
       plant.image ||
-      "https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿";
+      "assets/images/demo_pic.png";
 
     return `
             <div class="plant-card" data-plant-id="${plant.id}">
@@ -535,7 +535,7 @@ class BotanicalApp {
     if (!modalContent) return;
 
     // Use placeholder if no image
-    const imageSrc = plant.image || "https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿";
+    const imageSrc = plant.image || "assets/images/demo_pic.png";
     
     // --- Modal Structure with Tabs ---
     modalContent.innerHTML = `
@@ -738,12 +738,56 @@ class BotanicalApp {
   }
 
   /**
+   * @param {string} message The message to display.
+   * @returns {Promise<boolean>} A promise that resolves to true (if OK) or false (if Cancel).
+   */
+  showCustomConfirm(message) {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = `
+      <div class="confirm-modal-overlay">
+        <div class="confirm-modal-content">
+          <p>${message}</p>
+          <div class="confirm-modal-actions">
+            <button id="confirm-modalOkBtn" class="confirm-btn confirm-btn-danger">Ok</button>
+            <button id="confirm-modalCancelBtn" class="confirm-btn confirm-btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const modal = wrapper.firstElementChild;
+    const okButton = modal.querySelector('#confirm-modalOkBtn');
+    const cancelButton = modal.querySelector('#confirm-modalCancelBtn');
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    return new Promise((resolve) => {
+      const onOk = () => {
+        cleanup();
+        resolve(true); // Return 'true'
+      };
+      const onCancel = () => {
+        cleanup();
+        resolve(false); // Return 'false'
+      };
+      const cleanup = () => {
+        modal.remove();
+        okButton.removeEventListener('click', onOk);
+        cancelButton.removeEventListener('click', onCancel);
+      };
+      okButton.addEventListener('click', onOk);
+      cancelButton.addEventListener('click', onCancel);
+    });
+  }
+
+  /**
    * Deletes a journal entry and re-renders the detail modal.
    * @param {string} plantId - The ID of the plant.
    * @param {string} entryId - The ID of the entry to delete.
    */
-  deleteJournalEntry(plantId, entryId) {
-    if (confirm("Are you sure you want to delete this journal entry?")) {
+  async deleteJournalEntry(plantId, entryId) {
+    if (await this.showCustomConfirm("Are you sure you want to delete this journal entry?")) {
       const success = this.plantManager.deleteJournalEntry(plantId, entryId);
       if (success) {
         this.showNotification("Journal entry deleted.", "success");
@@ -772,7 +816,7 @@ class BotanicalApp {
     // Use placeholder if no image
     const imageSrc =
       wish.image ||
-      "https://via.placeholder.com/400x300/f39c12/ffffff?text=⭐";
+      "assets/images/demo_pic.png";
 
     // HTML for the Wishlist Detail Modal
     modalContent.innerHTML = `
@@ -829,9 +873,9 @@ class BotanicalApp {
     this.showModal();
   }
 
-  deletePlant(plantId) {
+  async deletePlant(plantId) {
     if (
-      confirm(
+      await this.showCustomConfirm(
         "Are you sure you want to delete this plant? This action cannot be undone."
       )
     ) {
@@ -852,12 +896,8 @@ class BotanicalApp {
    * Deletes a wishlist item by ID and updates the UI.
    * @param {string} wishId - The ID of the wishlist item.
    */
-  deleteWish(wishId) {
-    if (
-      confirm(
-        "Are you sure you want to delete this wishlist item? This action cannot be undone."
-      )
-    ) {
+  async deleteWish(wishId) {
+    if(await this.showCustomConfirm("Are you sure you want to delete this wishlist item? This action cannot be undone.")) {
       this.wishlistManager.deleteWish(wishId);
       this.hideModal();
       this.showNotification("Wishlist item removed", "success");
