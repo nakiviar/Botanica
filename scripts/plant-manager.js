@@ -14,7 +14,9 @@ class PlantManager {
             light: plantData.light,
             notes: plantData.notes || '',
             image: plantData.image,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            // Initialize the new journal array for a new plant
+            journal: []
         };
 
         this.plants.unshift(plant);
@@ -27,7 +29,7 @@ class PlantManager {
 
         // Apply type filter
         if (this.currentFilter !== 'all') {
-            filteredPlants = filteredPlants.filter(plant => 
+            filteredPlants = filteredPlants.filter(plant =>
                 plant.type === this.currentFilter
             );
         }
@@ -70,12 +72,12 @@ class PlantManager {
 
     getStats() {
         const total = this.plants.length;
-        const needsWater = this.plants.filter(plant => 
-            plant.notes && (plant.notes.toLowerCase().includes('water') || 
-            plant.notes.toLowerCase().includes('thirsty'))
+        const needsWater = this.plants.filter(plant =>
+            plant.notes && (plant.notes.toLowerCase().includes('water') ||
+                plant.notes.toLowerCase().includes('thirsty'))
         ).length;
-        
-        const lowLight = this.plants.filter(plant => 
+
+        const lowLight = this.plants.filter(plant =>
             plant.light === 'low'
         ).length;
 
@@ -94,12 +96,58 @@ class PlantManager {
         localStorage.setItem('botanical-plants', JSON.stringify(this.plants));
     }
 
+    /**
+     * Adds a new journal entry to a specific plant.
+     * @param {string} plantId - The ID of the plant.
+     * @param {object} entryData - { note, image }
+     */
+    addJournalEntry(plantId, entryData) {
+        const entry = {
+            id: Date.now().toString(),
+            date: new Date().toISOString(),
+            note: entryData.note,
+            image: entryData.image || null,
+        };
+
+        const plant = this.getPlantById(plantId);
+        if (plant) {
+            // Ensure journal array exists (for older plants loaded from storage)
+            if (!plant.journal) {
+                plant.journal = [];
+            }
+            // Add newest entry to the start of the array (reverse chronological)
+            plant.journal.unshift(entry);
+            this.saveToStorage();
+            return entry;
+        }
+        return null;
+    }
+
+    /**
+     * Deletes a specific journal entry from a plant.
+     * @param {string} plantId - The ID of the plant.
+     * @param {string} entryId - The ID of the entry to delete.
+     */
+    deleteJournalEntry(plantId, entryId) {
+        const plant = this.getPlantById(plantId);
+        if (plant && plant.journal) {
+            const initialLength = plant.journal.length;
+            plant.journal = plant.journal.filter(entry => entry.id !== entryId);
+
+            if (plant.journal.length < initialLength) {
+                this.saveToStorage();
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Export/Import functionality
     exportData() {
         const data = JSON.stringify(this.plants, null, 2);
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        
+
         const a = document.createElement('a');
         a.href = url;
         a.download = `botanical-plants-${new Date().toISOString().split('T')[0]}.json`;
@@ -112,17 +160,17 @@ class PlantManager {
     importData(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            
+
             reader.onload = (e) => {
                 try {
                     const importedPlants = JSON.parse(e.target.result);
-                    
+
                     if (Array.isArray(importedPlants)) {
                         // Validate plant structure
-                        const validPlants = importedPlants.filter(plant => 
+                        const validPlants = importedPlants.filter(plant =>
                             plant && plant.name && plant.type
                         );
-                        
+
                         this.plants = [...this.plants, ...validPlants];
                         this.saveToStorage();
                         resolve(validPlants.length);
@@ -133,7 +181,7 @@ class PlantManager {
                     reject(error);
                 }
             };
-            
+
             reader.onerror = () => reject(new Error('Failed to read file'));
             reader.readAsText(file);
         });

@@ -424,7 +424,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ===================================== */
-/* NEW: Wishlist Component Styles */
+/* Wishlist Component Styles (Existing) */
 /* ===================================== */
 
 .wishlist-items-section {
@@ -442,7 +442,7 @@ input:focus, select:focus, textarea:focus {
 .wishlist-card {
     position: relative;
     /* Orange/Gold-like accent for wishes */
-    border: 1px solid #f39c12;
+    border: 1px solid #f39c12; 
 }
 
 /* Store Link Badge */
@@ -453,7 +453,7 @@ input:focus, select:focus, textarea:focus {
     font-size: 0.8rem;
     padding: 0.2rem 0.5rem;
     border-radius: 20px;
-    background: #f39c12;
+    background: #f39c12; 
     color: var(--white);
     text-decoration: none;
     font-weight: 600;
@@ -465,7 +465,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .wish-link-badge:hover {
-    background: #e67e22;
+    background: #e67e22; 
 }
 
 /* Card Delete Button (CRUD functionality) */
@@ -486,7 +486,7 @@ input:focus, select:focus, textarea:focus {
     align-items: center;
     opacity: 0.7;
     transition: var(--transition);
-    z-index: 10;
+    z-index: 10; 
 }
 
 .delete-wish-btn:hover {
@@ -499,4 +499,143 @@ input:focus, select:focus, textarea:focus {
     margin-top: 1rem;
     display: inline-block;
     text-decoration: none;
+}
+
+/* ===================================== */
+/* NEW: Plant Detail Journal Styles */
+/* ===================================== */
+
+/* Tabbed Navigation for Detail Modal */
+.detail-tabs {
+    display: flex;
+    justify-content: flex-start;
+    border-bottom: 2px solid var(--light);
+    margin: 0 2rem;
+}
+
+.detail-tabs .tab-btn {
+    padding: 10px 15px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--text-light);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s, border-bottom 0.3s;
+    margin-right: 15px;
+    font-size: 1rem;
+}
+
+.detail-tabs .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--secondary);
+}
+
+.tab-content {
+    display: none;
+    padding: 2rem;
+    animation: fadeIn 0.4s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.journal-history-header {
+    margin-top: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--light);
+}
+
+.journal-form {
+    border: 1px solid var(--light);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--light);
+}
+
+.journal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.journal-entries-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Individual Journal Card (Timeline Look) */
+.journal-card {
+    position: relative;
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--accent);
+}
+
+.journal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.journal-date {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+.journal-note {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.journal-image-preview img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-top: 0.5rem;
+}
+
+.btn-delete-entry {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.btn-delete-entry:hover {
+    opacity: 1;
+}
+
+.empty-state-small {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-light);
+}
+
+/* Responsive adjustments for the detail modal */
+@media (max-width: 550px) {
+    .detail-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .detail-image {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+        margin: 0 auto 1rem;
+    }
+    .detail-tabs {
+        margin: 0 1rem;
+    }
 }
