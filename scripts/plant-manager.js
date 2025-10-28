@@ -23,6 +23,19 @@ class PlantManager {
         this.saveToStorage();
         return plant;
     }
+    function updatePlant(updatedPlant) {
+        const plants = getPlants();
+        const index = plants.findIndex(p => p.id === updatedPlant.id);
+    if (index !== -1) {
+        plants[index] = updatedPlant;
+        localStorage.setItem('plants', JSON.stringify(plants));
+      }
+    }
+    function getPlantById(id) {
+        const plants = getPlants();
+        return plants.find(p => p.id === id);
+    }
+
 
     getPlants() {
         let filteredPlants = this.plants;
