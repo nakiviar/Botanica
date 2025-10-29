@@ -70,8 +70,21 @@ class BotanicalApp {
     document.querySelectorAll(".footer-nav-link").forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        const page = e.target.getAttribute("data-page");
-        this.showPage(page);
+        
+        // Use .closest() to make sure we get the link
+        const targetLink = e.target.closest(".footer-nav-link");
+        if (!targetLink) return;
+
+        const page = targetLink.getAttribute("data-page");
+
+        // --- THIS IS THE NEW LOGIC ---
+        if (page && page === this.currentPage) {
+          // Use your existing notification function
+          this.showNotification("You are already on this page", "info");
+        } else if (page) {
+          this.showPage(page);
+        }
+        // --- END OF NEW LOGIC ---
       });
     });
 
@@ -107,7 +120,13 @@ class BotanicalApp {
         const page = btn.dataset.page;
 
         if (page) {
-          this.showPage(page);
+          // --- THIS IS THE NEW LOGIC ---
+          if (page === this.currentPage) {
+            this.showNotification("You are already on this page", "info");
+          } else {
+            this.showPage(page);
+          }
+          // --- END OF NEW LOGIC ---
         }
       }
     });
