@@ -75,6 +75,31 @@ class BotanicalApp {
       });
     });
 
+    // --- NEW Contact Modal Listeners ---
+    document.getElementById("contact-us-link")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.showContactModal();
+    });
+
+    document.getElementById("close-contact-modal")?.addEventListener("click", () => {
+      this.hideContactModal();
+    });
+
+    document.getElementById("contact-modal")?.addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) {
+        this.hideContactModal();
+      }
+    });
+
+    document.getElementById("contact-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      // Since there's no backend, we just simulate success
+      this.showNotification("Message sent successfully! (Demo)", "success");
+      document.getElementById("contact-form").reset();
+      this.hideContactModal();
+    });
+    // --- END Contact Modal Listeners ---
+
     // Navigation - Use event delegation
     document.querySelector(".nav").addEventListener("click", (e) => {
       if (e.target.closest(".nav-btn")) {
@@ -177,7 +202,8 @@ class BotanicalApp {
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        this.hideModal();
+        this.hideModal(); // Close plant modal
+        this.hideContactModal(); // Close contact modal
       }
     });
   }
@@ -263,6 +289,8 @@ class BotanicalApp {
           }
           document.getElementById("plant-form")?.reset();
           break;
+        // No case needed for help-center, privacy-policy, or terms-of-service
+        // as they are just simple content pages with no special init logic.
       }
     } else {
       console.error("Page not found:", pageName);
@@ -408,7 +436,7 @@ class BotanicalApp {
                             )}</p>`
                         : ""
                     }
-                    <div class="plant-meta">
+                    <div class_."plant-meta">
                         <span class="plant-type">${plant.type}</span>
                         <span class="plant-light">
                             <i class="${
@@ -748,7 +776,7 @@ class BotanicalApp {
       <div class="confirm-modal-overlay">
         <div class="confirm-modal-content">
           <p>${message}</p>
-          <div class="confirm-modal-actions">
+          <div class_."confirm-modal-actions">
             <button id="confirm-modalOkBtn" class="confirm-btn confirm-btn-danger">Ok</button>
             <button id="confirm-modalCancelBtn" class="confirm-btn confirm-btn-secondary">Cancel</button>
           </div>
@@ -820,7 +848,7 @@ class BotanicalApp {
 
     // HTML for the Wishlist Detail Modal
     modalContent.innerHTML = `
-            <div class="wish-detail">
+            <div class_."wish-detail">
                 <div class="detail-header">
                     <img src="${imageSrc}" 
                         alt="${this.escapeHtml(wish.name)}" 
@@ -849,7 +877,7 @@ class BotanicalApp {
                     : ""
                 }
                 <div class="form-actions">
-                    <button class="btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
+                    <button class_."btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
                         <i class="fas fa-edit"></i>
                         Edit Wish (Future)
                     </button>
@@ -924,6 +952,24 @@ class BotanicalApp {
       document.body.style.overflow = "auto";
     }
   }
+
+  // --- NEW Contact Modal Functions ---
+  showContactModal() {
+    const modal = document.getElementById("contact-modal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  hideContactModal() {
+    const modal = document.getElementById("contact-modal");
+    if (modal) {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "auto";
+    }
+  }
+  // --- END Contact Modal Functions ---
 
   showNotification(message, type = "info") {
     // Remove existing notifications

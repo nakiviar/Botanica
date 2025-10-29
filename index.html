@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="assets/icons/leaf.png" type="image/png" />
-    <title>Botanical | Open Source Plant Collection</title>
+    <title>Botanica | Open Source Plant Collection</title>
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/components.css" />
     <link rel="stylesheet" href="styles/responsive.css" />
@@ -538,6 +538,92 @@
             </div>
           </div>
         </div>
+
+        <div id="help-center" class="page">
+          <div class="page-header">
+            <h2>Help Center</h2>
+            <p>Find answers to common questions.</p>
+          </div>
+          <div class="about-content">
+            <div class="about-section">
+              <h3>How to Add a Plant?</h3>
+              <p>
+                Click the "Add Plant" button in the navigation bar. Fill out the
+                form with your plant's details and upload an image. Click "Add to
+                Collection" to save it.
+              </p>
+              <h3>How Does Storage Work?</h3>
+              <p>
+                This application uses your browser's Local Storage. This means
+                all your plant data is stored directly on your computer. No data
+                is sent to any server. If you clear your browser's cache or
+                data, your plant collection will be erased.
+              </p>
+              <h3>How to Delete a Plant?</h3>
+              <p>
+                Go to the "My Plants" page, click on the plant you want to
+                delete. In the details modal, scroll down and click the "Delete
+                Plant" button.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="privacy-policy" class="page">
+          <div class="page-header">
+            <h2>Privacy Policy</h2>
+            <p>Your data is your own.</p>
+          </div>
+          <div class="about-content">
+            <div class="about-section">
+              <h3>Data Collection</h3>
+              <p>
+                Botanica is a static application that runs entirely in your web
+                browser. We do not collect, store, transmit, or process any of
+                your personal data on any external servers. All information you
+                enter, including plant names, notes, and uploaded images, is
+                stored locally in your browser's "Local Storage".
+              </p>
+              <h3>Data Security</h3>
+              <p>
+                Your data's security is dependent on the security of your own
+                computer and web browser. We have no access to it. If you use a
+                shared computer, be aware that other users of that computer may
+_                be able to access your data.
+              </p>
+              <h3>Data Deletion</h3>
+              <p>
+                You can delete your data at any time by (a) deleting individual
+                plants within the app, or (b) clearing your browser's "Local
+                Storage" for this website.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="terms-of-service" class="page">
+          <div class="page-header">
+            <h2>Terms of Service</h2>
+            <p>Please read these terms carefully.</p>
+          </div>
+          <div class="about-content">
+            <div class="about-section">
+              <h3>Use of Service</h3>
+              <p>
+                This application is provided "as is" for personal,
+                non-commercial use. You are responsible for any data you enter
+                and for backing up your own data.
+              </p>
+              <h3>Limitation of Liability</h3>
+              <p>
+                The developers of Botanica are not responsible for any loss of
+                data or any other damages that may occur from the use of this
+                application. By using this app, you agree that you are doing so
+                at your own risk.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -550,6 +636,54 @@
       </div>
     </div>
 
+    <div id="contact-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="close-contact-modal" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="plant-detail">
+          <form id="contact-form" class="plant-form">
+            <h2 style="text-align: center; color: var(--primary)">Contact Us</h2>
+            <p
+              style="
+                text-align: center;
+                color: var(--text-light);
+                margin-bottom: 2rem;
+              "
+            >
+              Have a question or feedback? Let us know!
+            </p>
+
+            <div class="form-group">
+              <label for="contact-name">Your Name</label>
+              <input type="text" id="contact-name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-email">Your Email</label>
+              <input type="email" id="contact-email" required />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message">Message</label>
+              <textarea
+                id="contact-message"
+                rows="5"
+                required
+                placeholder="Your message..."
+              ></textarea>
+            </div>
+
+            <div class="form-actions" style="margin-top: 1rem">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-paper-plane"></i>
+                Send Message
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
@@ -622,7 +756,8 @@
               <li>
                 <a
                   href="javascript:void(0)"
-                  class="footer-nav-link"
+                  class.
+                  ="footer-nav-link"
                   data-page="about"
                   >About</a
                 >
@@ -662,10 +797,10 @@
           <div class="footer-section">
             <h4>Support</h4>
             <ul>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
+              <li><a href="javascript:void(0)" class="footer-nav-link" data-page="help-center">Help Center</a></li>
+              <li><a href="javascript:void(0)" id="contact-us-link">Contact Us</a></li>
+              <li><a href="javascript:void(0)" class="footer-nav-link" data-page="privacy-policy">Privacy Policy</a></li>
+              <li><a href="javascript:void(0)" class="footer-nav-link" data-page="terms-of-service">Terms of Service</a></li>
             </ul>
           </div>
         </div>
