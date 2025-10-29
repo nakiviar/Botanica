@@ -560,7 +560,8 @@ class BotanicalApp {
 
                 <div class="detail-tabs">
                     <button class="tab-btn active" data-tab="info">Info</button>
-                    <button class="tab-btn" data-tab="journal">Journal (${plant.journal?.length || 0})</button>
+          <button class="tab-btn" data-tab="journal">Journal (${plant.journal?.length || 0})</button>
+          <button class="tab-btn" data-tab="health">Health (${plant.healthLogs?.length || 0})</button>
                 </div>
 
                 <div id="tab-info" class="tab-content active">
@@ -615,6 +616,60 @@ class BotanicalApp {
                         ${this.renderJournalHistory(plant.journal || [])}
                     </div>
                 </div>
+
+        <div id="tab-health" class="tab-content">
+          <h3>Record Health Event</h3>
+          <form id="health-form" class="health-form" data-plant-id="${plantId}">
+            <div class="form-group">
+              <label for="health-type">Event Type *</label>
+              <select id="health-type" required>
+                <option value="watering">Watering</option>
+                <option value="fertilizer">Fertilizer</option>
+                <option value="growth">Growth / Photo</option>
+                <option value="pest">Pest / Disease</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="health-date">Date *</label>
+              <input type="date" id="health-date" required value="${new Date().toISOString().split('T')[0]}" />
+            </div>
+
+            <div class="form-group">
+              <label for="health-notes">Notes</label>
+              <textarea id="health-notes" rows="2" placeholder="Notes about watering, fertilizer, pests, growth..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Photo (optional)</label>
+              <div class="image-upload">
+                <div class="upload-area" id="health-upload-area">
+                  <i class="fas fa-camera"></i>
+                  <p>Click to upload image</p>
+                  <input type="file" id="health-image" accept="image/*" hidden />
+                </div>
+                <div class="image-preview hidden" id="health-image-preview">
+                  <img id="health-preview-img" src="" alt="Preview" />
+                  <button type="button" id="health-remove-image" class="btn-remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions journal-actions">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-plus"></i> Add Health Log
+              </button>
+            </div>
+          </form>
+
+          <h3 class="health-history-header">Health History</h3>
+          <div id="health-entries-container" class="health-entries-container">
+            ${this.renderHealthHistory(plant.healthLogs || [])}
+          </div>
+        </div>
             </div>
         `;
         
@@ -626,6 +681,12 @@ class BotanicalApp {
             this.imageHandler.initHandler("journal-upload-area", "journal-image", "journal-image-preview", "journal-remove-image", "journal-preview-img");
             this.imageHandler.clearImage();
         }
+
+    // Initialize image handler for the health form (growth/pest photos)
+    if (this.imageHandler) {
+      this.imageHandler.initHandler("health-upload-area", "health-image", "health-image-preview", "health-remove-image", "health-preview-img");
+      this.imageHandler.clearImage();
+    }
 
         this.showModal();
   }
@@ -655,6 +716,91 @@ class BotanicalApp {
                     </div>` : ''}
             </div>
         `).join('');
+  }
+
+  /**
+   * Renders health logs history for a plant.
+   * @param {Array<object>} logs
+   * @returns {string}
+   */
+  renderHealthHistory(logs) {
+    if (!logs || logs.length === 0) {
+      return `<div class="empty-state-small">No health logs recorded yet.</div>`;
+    }
+
+    return logs.map(log => `
+      <div class="health-card" data-log-id="${log.id}">
+        <div class="health-header">
+          <span class="health-type">${this.escapeHtml(log.type)}</span>
+          <span class="health-date">${new Date(log.date).toLocaleDateString()}</span>
+          <button class="btn-delete-health" data-log-id="${log.id}" aria-label="Delete health log">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <p class="health-notes">${this.escapeHtml(log.notes || '')}</p>
+        ${log.image ? `
+          <div class="health-image-preview"><img src="${log.image}" alt="Health photo" /></div>
+        ` : ''}
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Handles health form submission (watering, fertilizer, growth photo, pest report).
+   * @param {string} plantId
+   */
+  async handleHealthSubmit(plantId) {
+    // Ensure image handler targets the health form
+    if (this.imageHandler) {
+      this.imageHandler.initHandler("health-upload-area", "health-image", "health-image-preview", "health-remove-image", "health-preview-img");
+    }
+
+    const type = document.getElementById('health-type')?.value;
+    const date = document.getElementById('health-date')?.value;
+    const notes = document.getElementById('health-notes')?.value.trim();
+
+    if (!type || !date) {
+      this.showNotification('Please provide an event type and date.', 'error');
+      return;
+    }
+
+    const imageValidation = this.imageHandler ? this.imageHandler.validateImage() : { valid: true };
+    if (this.imageHandler && !imageValidation.valid) {
+      this.showNotification(imageValidation.message, 'error');
+      return;
+    }
+
+    const image = this.imageHandler ? this.imageHandler.getImageData() : null;
+
+    const log = this.plantManager.addHealthLog(plantId, { type, date: new Date(date).toISOString(), notes, image });
+
+    if (log) {
+      this.showNotification('Health log added!', 'success');
+      // Reset form UI
+      document.getElementById('health-form')?.reset();
+      if (this.imageHandler) this.imageHandler.clearImage();
+      // Re-open the detail modal to refresh counts and history
+      this.showPlantDetail(plantId);
+    } else {
+      this.showNotification('Error adding health log.', 'error');
+    }
+  }
+
+  /**
+   * Deletes a health log with confirmation and re-renders the modal.
+   * @param {string} plantId
+   * @param {string} logId
+   */
+  async deleteHealthLog(plantId, logId) {
+    if (await this.showCustomConfirm('Are you sure you want to delete this health log?')) {
+      const success = this.plantManager.deleteHealthLog(plantId, logId);
+      if (success) {
+        this.showNotification('Health log deleted.', 'success');
+        this.showPlantDetail(plantId);
+      } else {
+        this.showNotification('Error deleting health log.', 'error');
+      }
+    }
   }
 
   /**
@@ -693,6 +839,21 @@ class BotanicalApp {
             this.deleteJournalEntry(plantId, entryId);
         }
     });
+
+  // 5. Health form submission
+  document.getElementById("health-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    this.handleHealthSubmit(plantId);
+  });
+
+  // 6. Health entry delete (delegation)
+  document.getElementById("health-entries-container")?.addEventListener("click", (e) => {
+    const deleteBtn = e.target.closest('.btn-delete-health');
+    if (deleteBtn) {
+      const logId = deleteBtn.dataset.logId;
+      this.deleteHealthLog(plantId, logId);
+    }
+  });
   }
 
   /**
