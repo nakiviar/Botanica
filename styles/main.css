@@ -1329,7 +1329,7 @@ body {
 #scrollupBtn {
   background-color: var(--secondary);
   color: whitesmoke;
-  cursor: pointer;
+  cursor: default;
   position: fixed;
   bottom: 15px;
   right: 20px;
@@ -1340,8 +1340,24 @@ body {
   height: 50px;
   padding: 5px;
   font-size: 20px;
+  z-index: 1100; /* above plant animation */
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
+  pointer-events: none;
+}
+
+/* Visible state */
+#scrollupBtn.show-scroll {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 #scrollupBtn:hover {
   background-color: var(--accent);
+  transform: translateY(-2px) scale(1.02);
 }
+
