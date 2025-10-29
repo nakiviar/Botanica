@@ -23,18 +23,29 @@ class PlantManager {
         this.saveToStorage();
         return plant;
     }
-    function updatePlant(updatedPlant) {
-        const plants = getPlants();
-        const index = plants.findIndex(p => p.id === updatedPlant.id);
-    if (index !== -1) {
-        plants[index] = updatedPlant;
-        localStorage.setItem('plants', JSON.stringify(plants));
-      }
+
+    openEditForm(plantId) {
+    const plant = this.plants.find(p => p.id === plantId);
+      if (!plant) return;
+
+      // Fill in form fields
+      document.getElementById('plantName').value = plant.name;
+      document.getElementById('plantSpecies').value = plant.species;
+      document.getElementById('plantType').value = plant.type;
+      document.getElementById('plantNotes').value = plant.notes;
+
+      // Store ID for update mode
+      const form = document.getElementById('plantForm');
+      form.dataset.editId = plant.id;
+
+      // Change button label
+      const addBtn = document.getElementById('addPlantBtn');
+      addBtn.textContent = 'Update Plant';
+
+      // Open the Add/Edit modal if your app uses one
+      this.openModal('addPlantModal');
     }
-    function getPlantById(id) {
-        const plants = getPlants();
-        return plants.find(p => p.id === id);
-    }
+
 
 
     getPlants() {
