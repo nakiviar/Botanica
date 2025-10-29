@@ -640,66 +640,169 @@ input:focus, select:focus, textarea:focus {
     }
 }
 
-.confirm-modal-overlay {
-  display: none; 
-  position: fixed; 
-  z-index: 1000; 
-  left: 0;
-  top: 0;
+/* Recently Added Section - Enhanced (Always Visible) */
+.recent-plants {
+  margin-top: 3rem;
+}
+
+.recent-plants h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+#recent-plants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+#recent-plants-grid .plant-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+#recent-plants-grid .plant-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent);
+}
+
+#recent-plants-grid .plant-card img {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  align-items: center;
-  justify-content: center;
+  height: 200px;
+  object-fit: cover;
 }
 
-.confirm-modal-content {
-  background-color: var(--white);
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
+#recent-plants-grid .plant-card-content {
+  padding: 1.5rem;
 }
 
-.confirm-modal-content p {
-  font-size: 1.1rem;
-  margin-bottom: 20px;
+#recent-plants-grid .plant-card h4 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
 }
 
-.confirm-modal-actions {
+#recent-plants-grid .plant-card p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+#recent-plants-grid .plant-card .plant-meta {
   display: flex;
-  flex-direction: row;
-  align-items: center ;
-  justify-content: center;
-  gap: 16px;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
-.confirm-btn {
-  padding: 12px 24px;
+#recent-plants-grid .plant-card .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+#recent-plants-grid .plant-card .meta-item i {
+  color: var(--secondary);
+}
+
+#recent-plants-grid .plant-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+#recent-plants-grid .plant-card-actions button {
+  flex: 1;
+  padding: 0.75rem 1rem;
   border: none;
   border-radius: var(--radius);
-  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 0.9rem;
 }
 
-.confirm-btn-secondary {
-  background-color: var(--text-light);
-  color: var(--text);
-}
-
-.confirm-btn-danger {
-  background-color: var(--light);
-  color: var(--text);
-}
-
-.confirm-btn-danger:hover {
-  background-color: var(--accent);
+#recent-plants-grid .btn-view {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   color: var(--white);
+}
+
+#recent-plants-grid .btn-view:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(45, 80, 22, 0.3);
+}
+
+#recent-plants-grid .btn-edit {
+  background: var(--accent);
+  color: var(--white);
+}
+
+#recent-plants-grid .btn-edit:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+#recent-plants-grid .btn-delete {
+  background: #e74c3c;
+  color: var(--white);
+}
+
+#recent-plants-grid .btn-delete:hover {
+  background: #c0392b;
+  transform: scale(1.05);
+}
+
+/* Add New Plant Form - White Text Fix */
+.plant-form input[type="text"],
+.plant-form input[type="date"],
+.plant-form select,
+.plant-form textarea {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid var(--light);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  background: var(--white);
+  color: var(--text) !important;
+}
+
+.plant-form input[type="text"]:focus,
+.plant-form input[type="date"]:focus,
+.plant-form select:focus,
+.plant-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139, 181, 116, 0.2);
+  color: var(--text) !important;
+}
+
+.plant-form input::placeholder,
+.plant-form textarea::placeholder {
+  color: var(--text-light);
+  opacity: 0.7;
+}
+
+/* Dark mode support for form inputs */
+body.dark-mode .plant-form input[type="text"],
+body.dark-mode .plant-form input[type="date"],
+body.dark-mode .plant-form select,
+body.dark-mode .plant-form textarea {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .plant-form input::placeholder,
+body.dark-mode .plant-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
