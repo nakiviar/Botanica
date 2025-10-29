@@ -985,7 +985,7 @@ class BotanicalApp {
                 <span>${message}</span>
             </div>
         `;
-
+  
     // Add styles if not already added
     if (!document.querySelector("#notification-styles")) {
       const styles = document.createElement("style");
