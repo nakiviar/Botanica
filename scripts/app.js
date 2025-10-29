@@ -795,7 +795,7 @@ class BotanicalApp {
       <div class="confirm-modal-overlay">
         <div class="confirm-modal-content">
           <p>${message}</p>
-          <div class_."confirm-modal-actions">
+          <div class="confirm-modal-actions">
             <button id="confirm-modalOkBtn" class="confirm-btn confirm-btn-danger">Ok</button>
             <button id="confirm-modalCancelBtn" class="confirm-btn confirm-btn-secondary">Cancel</button>
           </div>
