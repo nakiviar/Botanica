@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/components.css" />
     <link rel="stylesheet" href="styles/responsive.css" />
+    <link rel="stylesheet" href="styles/calendar.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -41,6 +42,10 @@
           <button class="nav-btn" data-page="discover">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
+          </button>
+          <button class="nav-btn" data-page="calendar">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Care Calendar</span>
           </button>
           <button class="nav-btn" data-page="about">
             <i class="fas fa-info-circle"></i>
@@ -446,6 +451,59 @@
           </div>
         </div>
 
+        <div id="calendar" class="page">
+          <div class="page-header">
+            <h2>Plant Care Calendar</h2>
+            <p>Track and manage your plant care schedules</p>
+          </div>
+          <div class="calendar-controls">
+            <div class="calendar-nav">
+              <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
+              <h3 id="current-month">October 2025</h3>
+              <button id="next-month" class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <button id="add-reminder" class="btn-primary">
+              <i class="fas fa-plus"></i> Add Reminder
+            </button>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+          <div class="reminders-list">
+            <h3>Upcoming Care Tasks</h3>
+            <div id="upcoming-reminders"></div>
+          </div>
+        </div>
+
+        <div id="calendar" class="page">
+          <div class="page-header">
+            <h2>Plant Care Calendar</h2>
+            <p>Track and manage your plant care schedules</p>
+          </div>
+          <div class="calendar-controls">
+            <div class="calendar-nav">
+              <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
+              <h3 id="current-month">October 2025</h3>
+              <button id="next-month" class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <button id="add-reminder" class="btn-primary">
+              <i class="fas fa-plus"></i> Add Reminder
+            </button>
+          </div>
+          <div class="calendar-header">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+          <div class="reminders-list">
+            <h3>Upcoming Care Tasks</h3>
+            <div id="upcoming-reminders"></div>
+          </div>
+        </div>
+
         <div id="discover" class="page">
           <div class="page-header">
             <h2>Plant Discovery</h2>
@@ -624,6 +682,7 @@
     <script src="scripts/image-handler.js"></script>
     <script src="scripts/plant-manager.js"></script>
     <script src="scripts/wishlist-manager.js"></script>
+    <script src="scripts/calendar-manager.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/scroll_btn.js" defer></script>
 
