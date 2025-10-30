@@ -1,12 +1,14 @@
-class BotanicalApp {
-  constructor() {
-    this.plantManager = new PlantManager();
-    this.wishlistManager = new WishlistManager();
-    this.imageHandler = new ImageHandler();
-    this.currentPage = "dashboard";
 
-    this.init();
-  }
+class BotanicalApp {
+  constructor() {
+    this.plantManager = new PlantManager();
+    this.wishlistManager = new WishlistManager();
+    this.calendarManager = calendarManager; // <-- ADD THIS
+    this.imageHandler = new ImageHandler();
+    this.currentPage = "dashboard";
+
+    this.init();
+  }
 
   init() {
     this.bindEvents();
