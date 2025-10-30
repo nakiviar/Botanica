@@ -623,6 +623,140 @@ input:focus, select:focus, textarea:focus {
     color: var(--text-light);
 }
 
+/* Health Status Badge Styles */
+.health-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.health-status.excellent {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.health-status.good {
+    background-color: #d9edf7;
+    color: #31708f;
+}
+
+.health-status.fair {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+}
+
+.health-status.poor {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+/* Growth Timeline Styles */
+.growth-timeline {
+    margin: 2rem 0;
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-entry {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+}
+
+.timeline-entry::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.timeline-entry::after {
+    content: '';
+    position: absolute;
+    left: -1.6rem;
+    top: 1rem;
+    width: 2px;
+    height: calc(100% + 1rem);
+    background-color: var(--accent);
+    opacity: 0.3;
+}
+
+.timeline-entry:last-child::after {
+    display: none;
+}
+
+.timeline-date {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.timeline-content {
+    background: var(--white);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.timeline-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-top: 1rem;
+}
+
+.health-form {
+    background: var(--light);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+}
+
+.health-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.weather-select {
+    background-color: var(--white);
+    border: 1px solid var(--light);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.watering-suggestion {
+    background: #e8f4fd;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-top: 1rem;
+    color: #31708f;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.watering-suggestion i {
+    font-size: 1.2rem;
+    color: #5bc0de;
+}
+
 /* Responsive adjustments for the detail modal */
 @media (max-width: 550px) {
     .detail-header {
@@ -637,6 +771,9 @@ input:focus, select:focus, textarea:focus {
     }
     .detail-tabs {
         margin: 0 1rem;
+    }
+    .health-form-grid {
+        grid-template-columns: 1fr;
     }
 }
 

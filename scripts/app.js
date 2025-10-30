@@ -619,6 +619,24 @@ class BotanicalApp {
 
         <div id="tab-health" class="tab-content">
           <h3>Record Health Event</h3>
+          <div class="health-status-bar">
+            <h4>Current Status:</h4>
+            <div class="status-badges">
+              <button class="status-badge ${plant.healthLogs?.[0]?.status === 'thriving' ? 'active' : ''}" data-status="thriving">
+                <i class="fas fa-star"></i> Thriving
+              </button>
+              <button class="status-badge ${!plant.healthLogs?.[0]?.status || plant.healthLogs?.[0]?.status === 'healthy' ? 'active' : ''}" data-status="healthy">
+                <i class="fas fa-check-circle"></i> Healthy
+              </button>
+              <button class="status-badge ${plant.healthLogs?.[0]?.status === 'struggling' ? 'active' : ''}" data-status="struggling">
+                <i class="fas fa-exclamation-circle"></i> Struggling
+              </button>
+              <button class="status-badge ${plant.healthLogs?.[0]?.status === 'concern' ? 'active' : ''}" data-status="concern">
+                <i class="fas fa-heart-broken"></i> Concern
+              </button>
+            </div>
+          </div>
+
           <form id="health-form" class="health-form" data-plant-id="${plantId}">
             <div class="form-group">
               <label for="health-type">Event Type *</label>
@@ -634,6 +652,26 @@ class BotanicalApp {
             <div class="form-group">
               <label for="health-date">Date *</label>
               <input type="date" id="health-date" required value="${new Date().toISOString().split('T')[0]}" />
+            </div>
+
+            <div class="form-group">
+              <label for="health-weather">Weather Conditions</label>
+              <select id="health-weather">
+                <option value="">Select weather...</option>
+                <option value="sunny">☀️ Sunny</option>
+                <option value="partial">⛅ Partially Cloudy</option>
+                <option value="cloudy">☁️ Cloudy</option>
+                <option value="rainy">🌧️ Rainy</option>
+                <option value="humid">💧 Humid</option>
+              </select>
+            </div>
+
+            ${this.plantManager.suggestNextWatering(plantId) ? `
+              <div class="watering-suggestion">
+                <i class="fas fa-tint"></i>
+                Suggested next watering: ${this.plantManager.suggestNextWatering(plantId).toLocaleDateString()}
+              </div>
+            ` : ''}
             </div>
 
             <div class="form-group">
@@ -728,21 +766,59 @@ class BotanicalApp {
       return `<div class="empty-state-small">No health logs recorded yet.</div>`;
     }
 
-    return logs.map(log => `
-      <div class="health-card" data-log-id="${log.id}">
-        <div class="health-header">
-          <span class="health-type">${this.escapeHtml(log.type)}</span>
-          <span class="health-date">${new Date(log.date).toLocaleDateString()}</span>
-          <button class="btn-delete-health" data-log-id="${log.id}" aria-label="Delete health log">
-            <i class="fas fa-trash"></i>
-          </button>
+    // Get growth timeline for photo gallery if there are growth photos
+    const growthPhotos = logs.filter(log => log.type === 'growth' && log.image);
+    const hasGrowthTimeline = growthPhotos.length > 0;
+
+    return `
+      ${hasGrowthTimeline ? `
+        <div class="growth-timeline">
+          <h4>Growth Timeline</h4>
+          <div class="growth-photos">
+            ${growthPhotos.map((log, index) => `
+              <div class="growth-photo" style="--delay: ${index * 0.1}s">
+                <img src="${log.image}" alt="Growth progress on ${new Date(log.date).toLocaleDateString()}" />
+                <div class="growth-photo-info">
+                  <span class="growth-photo-date">${new Date(log.date).toLocaleDateString()}</span>
+                  ${log.notes ? `<p class="growth-photo-notes">${this.escapeHtml(log.notes)}</p>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
-        <p class="health-notes">${this.escapeHtml(log.notes || '')}</p>
-        ${log.image ? `
-          <div class="health-image-preview"><img src="${log.image}" alt="Health photo" /></div>
-        ` : ''}
+      ` : ''}
+
+      <div class="health-logs">
+        ${logs.map(log => `
+          <div class="health-card" data-log-id="${log.id}">
+            <div class="health-header">
+              <span class="health-status ${log.status}">${log.status}</span>
+              <span class="health-type">${this.escapeHtml(log.type)}</span>
+              <span class="health-date">${new Date(log.date).toLocaleDateString()}</span>
+              ${log.weather ? `<span class="health-weather">${this.getWeatherEmoji(log.weather)}</span>` : ''}
+              <button class="btn-delete-health" data-log-id="${log.id}" aria-label="Delete health log">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <p class="health-notes">${this.escapeHtml(log.notes || '')}</p>
+            ${log.image && log.type !== 'growth' ? `
+              <div class="health-image-preview"><img src="${log.image}" alt="Health photo" /></div>
+            ` : ''}
+          </div>
+        `).join('')}
       </div>
-    `).join('');
+    `;
+  }
+
+  getWeatherEmoji(weather) {
+    const emojis = {
+      sunny: '☀️',
+      partial: '⛅',
+      cloudy: '☁️',
+      rainy: '🌧️',
+      humid: '💧'
+    };
+    return emojis[weather] || '';
   }
 
   /**
@@ -758,6 +834,10 @@ class BotanicalApp {
     const type = document.getElementById('health-type')?.value;
     const date = document.getElementById('health-date')?.value;
     const notes = document.getElementById('health-notes')?.value.trim();
+    const weather = document.getElementById('health-weather')?.value;
+    
+    // Get active status badge
+    const activeStatus = document.querySelector('.status-badge.active')?.dataset.status || 'healthy';
 
     if (!type || !date) {
       this.showNotification('Please provide an event type and date.', 'error');
@@ -772,7 +852,14 @@ class BotanicalApp {
 
     const image = this.imageHandler ? this.imageHandler.getImageData() : null;
 
-    const log = this.plantManager.addHealthLog(plantId, { type, date: new Date(date).toISOString(), notes, image });
+    const log = this.plantManager.addHealthLog(plantId, {
+      type,
+      date: new Date(date).toISOString(),
+      notes,
+      image,
+      status: activeStatus,
+      weather
+    });
 
     if (log) {
       this.showNotification('Health log added!', 'success');
