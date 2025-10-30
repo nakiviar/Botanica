@@ -111,8 +111,8 @@ class WishlistManager {
   createWishCard(wish) {
     // Use a distinct placeholder for wishlist items
     const imageSrc =
-      wish.image ||
-      "https://via.placeholder.com/300x200/f39c12/ffffff?text=⭐";
+      wish.image || 
+      "assets/images/demo_pic.png";
 
     // HTML structure for the card (uses the plant-card class for consistent styling)
     return `

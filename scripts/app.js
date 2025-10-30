@@ -70,10 +70,48 @@ class BotanicalApp {
     document.querySelectorAll(".footer-nav-link").forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        const page = e.target.getAttribute("data-page");
-        this.showPage(page);
+        
+        // Use .closest() to make sure we get the link
+        const targetLink = e.target.closest(".footer-nav-link");
+        if (!targetLink) return;
+
+        const page = targetLink.getAttribute("data-page");
+
+        // --- THIS IS THE NEW LOGIC ---
+        if (page && page === this.currentPage) {
+          // Use your existing notification function
+          this.showNotification("You are already on this page", "info");
+        } else if (page) {
+          this.showPage(page);
+        }
+        // --- END OF NEW LOGIC ---
       });
     });
+
+    // --- NEW Contact Modal Listeners ---
+    document.getElementById("contact-us-link")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.showContactModal();
+    });
+
+    document.getElementById("close-contact-modal")?.addEventListener("click", () => {
+      this.hideContactModal();
+    });
+
+    document.getElementById("contact-modal")?.addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) {
+        this.hideContactModal();
+      }
+    });
+
+    document.getElementById("contact-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      // Since there's no backend, we just simulate success
+      this.showNotification("Message sent successfully! (Demo)", "success");
+      document.getElementById("contact-form").reset();
+      this.hideContactModal();
+    });
+    // --- END Contact Modal Listeners ---
 
     // Navigation - Use event delegation
     document.querySelector(".nav").addEventListener("click", (e) => {
@@ -82,7 +120,13 @@ class BotanicalApp {
         const page = btn.dataset.page;
 
         if (page) {
-          this.showPage(page);
+          // --- THIS IS THE NEW LOGIC ---
+          if (page === this.currentPage) {
+            this.showNotification("You are already on this page", "info");
+          } else {
+            this.showPage(page);
+          }
+          // --- END OF NEW LOGIC ---
         }
       }
     });
@@ -185,7 +229,8 @@ class BotanicalApp {
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        this.hideModal();
+        this.hideModal(); // Close plant modal
+        this.hideContactModal(); // Close contact modal
       }
     });
   }
@@ -298,6 +343,8 @@ class BotanicalApp {
           }
           document.getElementById("plant-form")?.reset();
           break;
+        // No case needed for help-center, privacy-policy, or terms-of-service
+        // as they are just simple content pages with no special init logic.
       }
     } else {
       console.error("Page not found:", pageName);
@@ -426,7 +473,7 @@ class BotanicalApp {
     // Use placeholder if no image
     const imageSrc =
       plant.image ||
-      "https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿";
+      "assets/images/demo_pic.png";
 
     return `
             <div class="plant-card" data-plant-id="${plant.id}">
@@ -443,7 +490,7 @@ class BotanicalApp {
                             )}</p>`
                         : ""
                     }
-                    <div class="plant-meta">
+                    <div class_."plant-meta">
                         <span class="plant-type">${plant.type}</span>
                         <span class="plant-light">
                             <i class="${
@@ -570,7 +617,7 @@ class BotanicalApp {
     if (!modalContent) return;
 
     // Use placeholder if no image
-    const imageSrc = plant.image || "https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿";
+    const imageSrc = plant.image || "assets/images/demo_pic.png";
     
     // --- Modal Structure with Tabs ---
     modalContent.innerHTML = `
@@ -595,7 +642,8 @@ class BotanicalApp {
 
                 <div class="detail-tabs">
                     <button class="tab-btn active" data-tab="info">Info</button>
-                    <button class="tab-btn" data-tab="journal">Journal (${plant.journal?.length || 0})</button>
+          <button class="tab-btn" data-tab="journal">Journal (${plant.journal?.length || 0})</button>
+          <button class="tab-btn" data-tab="health">Health (${plant.healthLogs?.length || 0})</button>
                 </div>
 
                 <div id="tab-info" class="tab-content active">
@@ -651,6 +699,60 @@ class BotanicalApp {
                         ${this.renderJournalHistory(plant.journal || [])}
                     </div>
                 </div>
+
+        <div id="tab-health" class="tab-content">
+          <h3>Record Health Event</h3>
+          <form id="health-form" class="health-form" data-plant-id="${plantId}">
+            <div class="form-group">
+              <label for="health-type">Event Type *</label>
+              <select id="health-type" required>
+                <option value="watering">Watering</option>
+                <option value="fertilizer">Fertilizer</option>
+                <option value="growth">Growth / Photo</option>
+                <option value="pest">Pest / Disease</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="health-date">Date *</label>
+              <input type="date" id="health-date" required value="${new Date().toISOString().split('T')[0]}" />
+            </div>
+
+            <div class="form-group">
+              <label for="health-notes">Notes</label>
+              <textarea id="health-notes" rows="2" placeholder="Notes about watering, fertilizer, pests, growth..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Photo (optional)</label>
+              <div class="image-upload">
+                <div class="upload-area" id="health-upload-area">
+                  <i class="fas fa-camera"></i>
+                  <p>Click to upload image</p>
+                  <input type="file" id="health-image" accept="image/*" hidden />
+                </div>
+                <div class="image-preview hidden" id="health-image-preview">
+                  <img id="health-preview-img" src="" alt="Preview" />
+                  <button type="button" id="health-remove-image" class="btn-remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions journal-actions">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-plus"></i> Add Health Log
+              </button>
+            </div>
+          </form>
+
+          <h3 class="health-history-header">Health History</h3>
+          <div id="health-entries-container" class="health-entries-container">
+            ${this.renderHealthHistory(plant.healthLogs || [])}
+          </div>
+        </div>
             </div>
         `;
         
@@ -662,6 +764,12 @@ class BotanicalApp {
             this.imageHandler.initHandler("journal-upload-area", "journal-image", "journal-image-preview", "journal-remove-image", "journal-preview-img");
             this.imageHandler.clearImage();
         }
+
+    // Initialize image handler for the health form (growth/pest photos)
+    if (this.imageHandler) {
+      this.imageHandler.initHandler("health-upload-area", "health-image", "health-image-preview", "health-remove-image", "health-preview-img");
+      this.imageHandler.clearImage();
+    }
 
         this.showModal();
   }
@@ -691,6 +799,91 @@ class BotanicalApp {
                     </div>` : ''}
             </div>
         `).join('');
+  }
+
+  /**
+   * Renders health logs history for a plant.
+   * @param {Array<object>} logs
+   * @returns {string}
+   */
+  renderHealthHistory(logs) {
+    if (!logs || logs.length === 0) {
+      return `<div class="empty-state-small">No health logs recorded yet.</div>`;
+    }
+
+    return logs.map(log => `
+      <div class="health-card" data-log-id="${log.id}">
+        <div class="health-header">
+          <span class="health-type">${this.escapeHtml(log.type)}</span>
+          <span class="health-date">${new Date(log.date).toLocaleDateString()}</span>
+          <button class="btn-delete-health" data-log-id="${log.id}" aria-label="Delete health log">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <p class="health-notes">${this.escapeHtml(log.notes || '')}</p>
+        ${log.image ? `
+          <div class="health-image-preview"><img src="${log.image}" alt="Health photo" /></div>
+        ` : ''}
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Handles health form submission (watering, fertilizer, growth photo, pest report).
+   * @param {string} plantId
+   */
+  async handleHealthSubmit(plantId) {
+    // Ensure image handler targets the health form
+    if (this.imageHandler) {
+      this.imageHandler.initHandler("health-upload-area", "health-image", "health-image-preview", "health-remove-image", "health-preview-img");
+    }
+
+    const type = document.getElementById('health-type')?.value;
+    const date = document.getElementById('health-date')?.value;
+    const notes = document.getElementById('health-notes')?.value.trim();
+
+    if (!type || !date) {
+      this.showNotification('Please provide an event type and date.', 'error');
+      return;
+    }
+
+    const imageValidation = this.imageHandler ? this.imageHandler.validateImage() : { valid: true };
+    if (this.imageHandler && !imageValidation.valid) {
+      this.showNotification(imageValidation.message, 'error');
+      return;
+    }
+
+    const image = this.imageHandler ? this.imageHandler.getImageData() : null;
+
+    const log = this.plantManager.addHealthLog(plantId, { type, date: new Date(date).toISOString(), notes, image });
+
+    if (log) {
+      this.showNotification('Health log added!', 'success');
+      // Reset form UI
+      document.getElementById('health-form')?.reset();
+      if (this.imageHandler) this.imageHandler.clearImage();
+      // Re-open the detail modal to refresh counts and history
+      this.showPlantDetail(plantId);
+    } else {
+      this.showNotification('Error adding health log.', 'error');
+    }
+  }
+
+  /**
+   * Deletes a health log with confirmation and re-renders the modal.
+   * @param {string} plantId
+   * @param {string} logId
+   */
+  async deleteHealthLog(plantId, logId) {
+    if (await this.showCustomConfirm('Are you sure you want to delete this health log?')) {
+      const success = this.plantManager.deleteHealthLog(plantId, logId);
+      if (success) {
+        this.showNotification('Health log deleted.', 'success');
+        this.showPlantDetail(plantId);
+      } else {
+        this.showNotification('Error deleting health log.', 'error');
+      }
+    }
   }
 
   /**
@@ -736,6 +929,21 @@ class BotanicalApp {
             this.deleteJournalEntry(plantId, entryId);
         }
     });
+
+  // 5. Health form submission
+  document.getElementById("health-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    this.handleHealthSubmit(plantId);
+  });
+
+  // 6. Health entry delete (delegation)
+  document.getElementById("health-entries-container")?.addEventListener("click", (e) => {
+    const deleteBtn = e.target.closest('.btn-delete-health');
+    if (deleteBtn) {
+      const logId = deleteBtn.dataset.logId;
+      this.deleteHealthLog(plantId, logId);
+    }
+  });
   }
 
   /**
@@ -781,12 +989,56 @@ class BotanicalApp {
   }
 
   /**
+   * @param {string} message The message to display.
+   * @returns {Promise<boolean>} A promise that resolves to true (if OK) or false (if Cancel).
+   */
+  showCustomConfirm(message) {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = `
+      <div class="confirm-modal-overlay">
+        <div class="confirm-modal-content">
+          <p>${message}</p>
+          <div class="confirm-modal-actions">
+            <button id="confirm-modalOkBtn" class="confirm-btn confirm-btn-danger">Ok</button>
+            <button id="confirm-modalCancelBtn" class="confirm-btn confirm-btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const modal = wrapper.firstElementChild;
+    const okButton = modal.querySelector('#confirm-modalOkBtn');
+    const cancelButton = modal.querySelector('#confirm-modalCancelBtn');
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    return new Promise((resolve) => {
+      const onOk = () => {
+        cleanup();
+        resolve(true); // Return 'true'
+      };
+      const onCancel = () => {
+        cleanup();
+        resolve(false); // Return 'false'
+      };
+      const cleanup = () => {
+        modal.remove();
+        okButton.removeEventListener('click', onOk);
+        cancelButton.removeEventListener('click', onCancel);
+      };
+      okButton.addEventListener('click', onOk);
+      cancelButton.addEventListener('click', onCancel);
+    });
+  }
+
+  /**
    * Deletes a journal entry and re-renders the detail modal.
    * @param {string} plantId - The ID of the plant.
    * @param {string} entryId - The ID of the entry to delete.
    */
-  deleteJournalEntry(plantId, entryId) {
-    if (confirm("Are you sure you want to delete this journal entry?")) {
+  async deleteJournalEntry(plantId, entryId) {
+    if (await this.showCustomConfirm("Are you sure you want to delete this journal entry?")) {
       const success = this.plantManager.deleteJournalEntry(plantId, entryId);
       if (success) {
         this.showNotification("Journal entry deleted.", "success");
@@ -815,11 +1067,11 @@ class BotanicalApp {
     // Use placeholder if no image
     const imageSrc =
       wish.image ||
-      "https://via.placeholder.com/400x300/f39c12/ffffff?text=⭐";
+      "assets/images/demo_pic.png";
 
     // HTML for the Wishlist Detail Modal
     modalContent.innerHTML = `
-            <div class="wish-detail">
+            <div class_."wish-detail">
                 <div class="detail-header">
                     <img src="${imageSrc}" 
                         alt="${this.escapeHtml(wish.name)}" 
@@ -848,7 +1100,7 @@ class BotanicalApp {
                     : ""
                 }
                 <div class="form-actions">
-                    <button class="btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
+                    <button class_."btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
                         <i class="fas fa-edit"></i>
                         Edit Wish (Future)
                     </button>
@@ -872,9 +1124,9 @@ class BotanicalApp {
     this.showModal();
   }
 
-  deletePlant(plantId) {
+  async deletePlant(plantId) {
     if (
-      confirm(
+      await this.showCustomConfirm(
         "Are you sure you want to delete this plant? This action cannot be undone."
       )
     ) {
@@ -895,12 +1147,8 @@ class BotanicalApp {
    * Deletes a wishlist item by ID and updates the UI.
    * @param {string} wishId - The ID of the wishlist item.
    */
-  deleteWish(wishId) {
-    if (
-      confirm(
-        "Are you sure you want to delete this wishlist item? This action cannot be undone."
-      )
-    ) {
+  async deleteWish(wishId) {
+    if(await this.showCustomConfirm("Are you sure you want to delete this wishlist item? This action cannot be undone.")) {
       this.wishlistManager.deleteWish(wishId);
       this.hideModal();
       this.showNotification("Wishlist item removed", "success");
@@ -928,6 +1176,24 @@ class BotanicalApp {
     }
   }
 
+  // --- NEW Contact Modal Functions ---
+  showContactModal() {
+    const modal = document.getElementById("contact-modal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  hideContactModal() {
+    const modal = document.getElementById("contact-modal");
+    if (modal) {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "auto";
+    }
+  }
+  // --- END Contact Modal Functions ---
+
   showNotification(message, type = "info") {
     // Remove existing notifications
     const existingNotifications = document.querySelectorAll(".notification");
@@ -942,7 +1208,7 @@ class BotanicalApp {
                 <span>${message}</span>
             </div>
         `;
-
+  
     // Add styles if not already added
     if (!document.querySelector("#notification-styles")) {
       const styles = document.createElement("style");

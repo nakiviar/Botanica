@@ -64,6 +64,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 }
 
 .logo i {
@@ -584,6 +585,11 @@ body {
   color: var(--accent);
 }
 
+.footer-section p {
+  color:#ffffff;
+  line-height: 1.6;
+}
+
 .footer-section ul {
   list-style: none;
 }
@@ -593,7 +599,7 @@ body {
 }
 
 .footer-section a {
-  color: var(--light);
+  color: #ffffff;
   text-decoration: none;
   transition: var(--transition);
 }
@@ -607,6 +613,10 @@ body {
   align-items: center;
   gap: 10px;
   margin-bottom: 1rem;
+}
+
+.footer-logo h3 {
+  color: #ffffff;
 }
 
 .footer-logo i {
@@ -629,6 +639,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transition: var(--transition);
+  color: #ffffff;
 }
 
 .social-links a:hover {
@@ -640,10 +651,28 @@ body {
   text-align: center;
   padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .footer-bottom i {
   color: #e74c3c;
+}
+
+/* Dark mode footer text override */
+[data-theme="dark"] .footer {
+  color: var(--white);
+}
+
+[data-theme="dark"] .footer-section p,
+[data-theme="dark"] .footer-section a,
+[data-theme="dark"] .footer-logo h3,
+[data-theme="dark"] .footer-bottom,
+[data-theme="dark"] .social-links a {
+  color: var(--white);
+}
+
+[data-theme="dark"] .footer-section a:hover {
+  color: #ffffff;
 }
 
 /* Beautiful Growing Plant Animation */
@@ -1300,7 +1329,7 @@ body {
 #scrollupBtn {
   background-color: var(--secondary);
   color: whitesmoke;
-  cursor: pointer;
+  cursor: default;
   position: fixed;
   bottom: 15px;
   right: 20px;
@@ -1311,8 +1340,50 @@ body {
   height: 50px;
   padding: 5px;
   font-size: 20px;
+  z-index: 1100; /* above plant animation */
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
+  pointer-events: none;
+}
+
+/* Visible state */
+#scrollupBtn.show-scroll {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 #scrollupBtn:hover {
   background-color: var(--accent);
+  transform: translateY(-2px) scale(1.02);
 }
+select {
+  font-family: inherit; 
+  font-size: 14px; 
+  font-weight: 500; 
+  padding: 8px 12px; 
+  border: 2px solid #BDC3C7; 
+  border-radius: 8px; 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #ECF0F1; 
+  color: #2E7D32; 
+  box-shadow: 0 2px 4px rgba(44, 62, 80, 0.1); 
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+select:hover {
+  border-color: #95A5A6; 
+  box-shadow: 0 4px 8px rgba(44, 62, 80, 0.15); 
+}
+
+select:focus {
+  outline: none; 
+  border-color: #4CAF50; 
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); 
+}
+

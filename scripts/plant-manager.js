@@ -15,8 +15,9 @@ class PlantManager {
             notes: plantData.notes || '',
             image: plantData.image,
             createdAt: new Date().toISOString(),
-            // Initialize the new journal array for a new plant
-            journal: []
+            // Initialize the new journal array and health logs for a new plant
+            journal: [],
+            healthLogs: []
         };
 
         this.plants.unshift(plant);
@@ -47,6 +48,66 @@ class PlantManager {
     }
 
 
+    /**
+     * Adds a health log entry to a plant. A health log can be of types:
+     * 'watering', 'fertilizer', 'growth', 'pest', 'general'.
+     * @param {string} plantId
+     * @param {object} logData - { type, date, notes, image, details }
+     */
+    addHealthLog(plantId, logData) {
+        const entry = {
+            id: Date.now().toString(),
+            type: logData.type || 'general',
+            date: logData.date || new Date().toISOString(),
+            notes: logData.notes || '',
+            image: logData.image || null,
+            details: logData.details || null
+        };
+
+        const plant = this.getPlantById(plantId);
+        if (plant) {
+            if (!plant.healthLogs) plant.healthLogs = [];
+            plant.healthLogs.unshift(entry);
+            this.saveToStorage();
+            return entry;
+        }
+        return null;
+    }
+
+    getHealthLogs(plantId) {
+        const plant = this.getPlantById(plantId);
+        return plant && plant.healthLogs ? plant.healthLogs : [];
+    }
+
+    deleteHealthLog(plantId, logId) {
+        const plant = this.getPlantById(plantId);
+        if (plant && plant.healthLogs) {
+            const initialLength = plant.healthLogs.length;
+            plant.healthLogs = plant.healthLogs.filter(l => l.id !== logId);
+            if (plant.healthLogs.length < initialLength) {
+                this.saveToStorage();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Convenience helpers
+    addWateringEvent(plantId, { date, notes }) {
+        return this.addHealthLog(plantId, { type: 'watering', date, notes });
+    }
+
+    addFertilizerEvent(plantId, { date, notes }) {
+        return this.addHealthLog(plantId, { type: 'fertilizer', date, notes });
+    }
+
+    addGrowthPhoto(plantId, { date, notes, image }) {
+        return this.addHealthLog(plantId, { type: 'growth', date, notes, image });
+    }
+
+    addPestReport(plantId, { date, notes, image, details }) {
+        return this.addHealthLog(plantId, { type: 'pest', date, notes, image, details });
+    }
 
     getPlants() {
         let filteredPlants = this.plants;
