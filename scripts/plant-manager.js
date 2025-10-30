@@ -145,15 +145,27 @@ class PlantManager {
         this.saveToStorage();
     }
 
-    updatePlant(id, updatedData) {
-        const plantIndex = this.plants.findIndex(plant => plant.id === id);
-        if (plantIndex !== -1) {
-            this.plants[plantIndex] = { ...this.plants[plantIndex], ...updatedData };
-            this.saveToStorage();
-            return this.plants[plantIndex];
+    updatePlant(idOrPlant, updatedData) {
+      if (typeof idOrPlant === 'object') {
+        const plant = idOrPlant;
+        const index = this.plants.findIndex(p => p.id === plant.id);
+        if (index !== -1) {
+          this.plants[index] = plant;
+          this.saveToStorage();
+          return this.plants[index];
         }
-        return null;
+      } else {
+        const id = idOrPlant;
+        const plantIndex = this.plants.findIndex(p => p.id === id);
+        if (plantIndex !== -1) {
+          this.plants[plantIndex] = { ...this.plants[plantIndex], ...updatedData };
+          this.saveToStorage();
+          return this.plants[plantIndex];
+        }
+      }
+      return null;
     }
+
 
     getStats() {
         const total = this.plants.length;
