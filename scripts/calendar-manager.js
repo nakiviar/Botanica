@@ -98,7 +98,7 @@ class CalendarManager {
     // Get plant details by ID
     getPlantById(plantId) {
         const plants = JSON.parse(localStorage.getItem('plants')) || [];
-        return plants.find(p => p.id == plantId);
+        return plants.find(p => p.id === plantId);
     }
 
     // Save reminders to localStorage
@@ -157,3 +157,4 @@ class CalendarManager {
 
 // Create and export calendar manager instance
 const calendarManager = new CalendarManager();
+export default calendarManager;
