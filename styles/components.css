@@ -245,6 +245,20 @@ input:focus, select:focus, textarea:focus {
     background: var(--accent);
     color: var(--white);
 }
+/* Edit Button */
+.edit-btn {
+  background-color: #6dbf73;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.edit-btn:hover {
+  background-color: #57a65c;
+}
 
 /* Filter Controls */
 .filter-controls {
