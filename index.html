@@ -65,7 +65,11 @@
           <div class="hero">
             <h2>Welcome to Your Digital Garden</h2>
             <p>Collect, organize, and track your plant journey</p>
-             <p>"A garden is a grand teacher. It teaches patience and careful watchfulness; it teaches industry and thrift; above all it teaches entire trust." </p>
+            <p>
+              "A garden is a grand teacher. It teaches patience and careful
+              watchfulness; it teaches industry and thrift; above all it teaches
+              entire trust."
+            </p>
             <div class="stats-grid">
               <div class="stat-card">
                 <i class="fas fa-leaf"></i>
@@ -94,7 +98,10 @@
         <div id="collection" class="page">
           <div class="page-header">
             <h2>My Plant Collection</h2>
-             <p>"Every plant was once a small seed or cutting. Your collection starts with just one. Happy growing!"</p>
+            <p>
+              "Every plant was once a small seed or cutting. Your collection
+              starts with just one. Happy growing!"
+            </p>
             <div class="filter-controls">
               <select id="filter-type">
                 <option value="all">All Plants</option>
@@ -103,6 +110,33 @@
                 <option value="succulent">Succulent</option>
                 <option value="herb">Herb</option>
                 <option value="flowering">Flowering</option>
+              </select>
+              <label for="filter-light" class="sr-only"
+                >Filter by light requirement</label
+              >
+              <select id="filter-light">
+                <option value="all">All Light</option>
+                <option value="low">Low Light</option>
+                <option value="medium">Medium Light</option>
+                <option value="bright">Bright Light</option>
+              </select>
+              <label for="filter-watering" class="sr-only"
+                >Filter by watering frequency</label
+              >
+              <select id="filter-watering">
+                <option value="all">All Watering</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+              <label for="filter-difficulty" class="sr-only"
+                >Filter by difficulty</label
+              >
+              <select id="filter-difficulty">
+                <option value="all">All Difficulty</option>
+                <option value="easy">Easy</option>
+                <option value="moderate">Moderate</option>
+                <option value="hard">Hard</option>
               </select>
               <select id="sort-plants">
                 <option value="name">Sort by Name (A-Z)</option>
@@ -186,7 +220,10 @@
         <div id="add-plant" class="page">
           <div class="page-header">
             <h2>Add New Plant</h2>
-            <p>Ready to welcome a new green friend? 🌱 Every plant brings joy and life to your space!</p>
+            <p>
+              Ready to welcome a new green friend? 🌱 Every plant brings joy and
+              life to your space!
+            </p>
           </div>
           <form id="plant-form" class="plant-form">
             <div class="form-group">
@@ -235,6 +272,26 @@
                   <option value="bright">Bright Light</option>
                 </select>
               </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="watering-frequency">Watering Frequency</label>
+                <select id="watering-frequency">
+                  <option value="weekly">Weekly</option>
+                  <option value="daily">Daily</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty">
+                  <option value="easy">Easy</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              +
             </div>
 
             <div class="form-group">
@@ -461,9 +518,13 @@
           </div>
           <div class="calendar-controls">
             <div class="calendar-nav">
-              <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
+              <button id="prev-month" class="btn-secondary">
+                <i class="fas fa-chevron-left"></i>
+              </button>
               <h3 id="current-month">October 2025</h3>
-              <button id="next-month" class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
+              <button id="next-month" class="btn-secondary">
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
             <button id="add-reminder" class="btn-primary">
               <i class="fas fa-plus"></i> Add Reminder
@@ -483,9 +544,13 @@
           </div>
           <div class="calendar-controls">
             <div class="calendar-nav">
-              <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
+              <button id="prev-month" class="btn-secondary">
+                <i class="fas fa-chevron-left"></i>
+              </button>
               <h3 id="current-month">October 2025</h3>
-              <button id="next-month" class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
+              <button id="next-month" class="btn-secondary">
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
             <button id="add-reminder" class="btn-primary">
               <i class="fas fa-plus"></i> Add Reminder
@@ -552,8 +617,8 @@
               <h3>How to Add a Plant?</h3>
               <p>
                 Click the "Add Plant" button in the navigation bar. Fill out the
-                form with your plant's details and upload an image. Click "Add to
-                Collection" to save it.
+                form with your plant's details and upload an image. Click "Add
+                to Collection" to save it.
               </p>
               <h3>How Does Storage Work?</h3>
               <p>
@@ -592,7 +657,7 @@
                 Your data's security is dependent on the security of your own
                 computer and web browser. We have no access to it. If you use a
                 shared computer, be aware that other users of that computer may
-_                be able to access your data.
+                _ be able to access your data.
               </p>
               <h3>Data Deletion</h3>
               <p>
@@ -646,7 +711,9 @@ _                be able to access your data.
         </button>
         <div class="plant-detail">
           <form id="contact-form" class="plant-form">
-            <h2 style="text-align: center; color: var(--primary)">Contact Us</h2>
+            <h2 style="text-align: center; color: var(--primary)">
+              Contact Us
+            </h2>
             <p
               style="
                 text-align: center;
@@ -709,7 +776,11 @@ _                be able to access your data.
               <a href="#" aria-label="Instagram"
                 ><i class="fab fa-instagram"></i
               ></a>
-              <a href="https://github.com/Sandali3000/Botanica" aria-label="GitHub"><i class="fab fa-github"></i></a>
+              <a
+                href="https://github.com/Sandali3000/Botanica"
+                aria-label="GitHub"
+                ><i class="fab fa-github"></i
+              ></a>
             </div>
           </div>
 
@@ -799,10 +870,33 @@ _                be able to access your data.
           <div class="footer-section">
             <h4>Support</h4>
             <ul>
-              <li><a href="javascript:void(0)" class="footer-nav-link" data-page="help-center">Help Center</a></li>
-              <li><a href="javascript:void(0)" id="contact-us-link">Contact Us</a></li>
-              <li><a href="javascript:void(0)" class="footer-nav-link" data-page="privacy-policy">Privacy Policy</a></li>
-              <li><a href="javascript:void(0)" class="footer-nav-link" data-page="terms-of-service">Terms of Service</a></li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="help-center"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a href="javascript:void(0)" id="contact-us-link">Contact Us</a>
+              </li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="privacy-policy"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="terms-of-service"
+                  >Terms of Service</a
+                >
+              </li>
             </ul>
           </div>
         </div>
