@@ -157,4 +157,3 @@ class CalendarManager {
 
 // Create and export calendar manager instance
 const calendarManager = new CalendarManager();
-export default calendarManager;
