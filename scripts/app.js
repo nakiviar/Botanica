@@ -1,16 +1,19 @@
 
 class BotanicalApp {
-  constructor() {
-    this.plantManager = new PlantManager();
-    this.wishlistManager = new WishlistManager();
-    this.calendarManager = calendarManager; // <-- ADDED
-    this.imageHandler = new ImageHandler();
-    this.currentPage = "dashboard";
+  constructor() {
+    // Initialize managers
+    this.plantManager = new PlantManager();
+    this.wishlistManager = new WishlistManager();
+    this.calendarManager = calendarManager;
+    this.imageHandler = new ImageHandler();
+    this.currentPage = "dashboard";
 
-    this.init();
-  }
-
-  init() {
+    // Initialize theme
+    this.theme = localStorage.getItem("theme") || "light";
+    this.themeToggleBtn = document.getElementById("theme-toggle");
+    
+    this.init();
+  }  init() {
     this.bindEvents();
     this.loadThemePreference();
     this.showPage("dashboard");
@@ -67,27 +70,25 @@ class BotanicalApp {
     }, (duration + delay) * 1000);
   }
 
-  bindEvents() {
-    // Footer navigation links
-    document.querySelectorAll(".footer-nav-link").forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        
-        // Use .closest() to make sure we get the link
-        const targetLink = e.target.closest(".footer-nav-link");
-        if (!targetLink) return;
+  bindEvents() {
+    // Footer navigation links
+    document.querySelectorAll(".footer-nav-link").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        
+        // Use .closest() to make sure we get the link
+        const targetLink = e.target.closest(".footer-nav-link");
+        if (!targetLink) return;
 
-        const page = targetLink.getAttribute("data-page");
+        const page = targetLink.getAttribute("data-page");
 
-        if (page && page === this.currentPage) {
-          this.showNotification("You are already on this page", "info");
-        } else if (page) {
-          this.showPage(page);
-        }
-      });
-    });
-
-    // --- Contact Modal Listeners ---
+        if (page && page === this.currentPage) {
+          this.showNotification("You are already on this page", "info");
+        } else if (page) {
+          this.showPage(page);
+        }
+      });
+    });    // --- Contact Modal Listeners ---
     document.getElementById("contact-us-link")?.addEventListener("click", (e) => {
       e.preventDefault();
       this.showContactModal();
@@ -272,35 +273,52 @@ class BotanicalApp {
     });
   }
 
-  loadThemePreference() {
-    const savedTheme = localStorage.getItem("theme");
-    const themeToggle = document.getElementById("theme-toggle");
+  loadThemePreference() {
+    try {
+      // Apply current theme
+      this.applyTheme(this.theme);
+      
+      // Set up click handler
+      if (this.themeToggleBtn) {
+        this.themeToggleBtn.onclick = () => this.toggleTheme();
+      }
+    } catch (error) {
+      console.error("Error in loadThemePreference:", error);
+    }
+  }
 
-    if (savedTheme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-      if (themeToggle) {
-        themeToggle.querySelector("i").className = "fas fa-sun";
-        themeToggle.querySelector("span").textContent = "Light Mode";
-      }
-    }
-  }
+  applyTheme(theme) {
+    if (!this.themeToggleBtn) return;
+    
+    const icon = this.themeToggleBtn.querySelector("i");
+    const text = this.themeToggleBtn.querySelector("span");
+    
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      if (icon) icon.className = "fas fa-sun";
+      if (text) text.textContent = "Light Mode";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      if (icon) icon.className = "fas fa-moon";
+      if (text) text.textContent = "Dark Mode";
+    }
+  }
 
-  toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute("data-theme");
-    const themeToggle = document.getElementById("theme-toggle");
-    const icon = themeToggle.querySelector("i");
-
-    if (currentTheme === "dark") {
-      document.documentElement.removeAttribute("data-theme");
-      icon.className = "fas fa-moon";
-      themeToggle.querySelector("span").textContent = "Dark Mode";
-    } else {
-      document.documentElement.setAttribute("data-theme", "dark");
-      icon.className = "fas fa-sun";
-      themeToggle.querySelector("span").textContent = "Light Mode";
-    }
-
-    // Save preference to localStorage
+  toggleTheme() {
+    try {
+      // Toggle theme state
+      this.theme = this.theme === "dark" ? "light" : "dark";
+      
+      // Apply the new theme
+      this.applyTheme(this.theme);
+      
+      // Save to localStorage
+      localStorage.setItem("theme", this.theme);
+      
+      console.log("Theme toggled to:", this.theme);
+    } catch (error) {
+      console.error("Error in toggleTheme:", error);
+    }    // Save preference to localStorage
     localStorage.setItem(
       "theme",
       document.documentElement.getAttribute("data-theme") || "light"
@@ -747,4 +765,5 @@ class BotanicalApp {
                 <div class="upload-area" id="health-upload-area">
                   <i class="fas fa-camera"></i>
                   <p>Click to upload image</p>
-Note: Code-heavy output has been truncated.
+Note: Code-heavy output has been truncated.`
+}}
