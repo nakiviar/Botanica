@@ -61,9 +61,7 @@ class PlantManager {
             date: logData.date || new Date().toISOString(),
             notes: logData.notes || '',
             image: logData.image || null,
-            details: logData.details || null,
-            status: logData.status || 'healthy',
-            weather: logData.weather || null
+            details: logData.details || null
         };
 
         const plant = this.getPlantById(plantId);
@@ -73,13 +71,6 @@ class PlantManager {
             this.saveToStorage();
             return entry;
         }
-                   location: plantData.location || {
-                       room: '',
-                       coordinates: null,
-                       sunlightLevel: '',
-                       direction: '',
-                       height: 0
-                   }
         return null;
     }
 
@@ -143,64 +134,6 @@ class PlantManager {
 
     getPlantById(id) {
         return this.plants.find(plant => plant.id === id);
-    }
-
-    /**
-     * Get the most recent health status for a plant.
-     * @param {string} plantId - The ID of the plant.
-     * @returns {string} - The status (thriving/healthy/struggling/concern).
-     */
-    getPlantHealthStatus(plantId) {
-        const plant = this.getPlantById(plantId);
-        if (!plant?.healthLogs?.length) return 'healthy';
-        return plant.healthLogs[0].status;
-    }
-
-    /**
-     * Gets growth photo timeline for a plant.
-     * @param {string} plantId - The ID of the plant.
-     * @returns {Array<{date: string, image: string}>} Array of dated growth photos.
-     */
-    getGrowthTimeline(plantId) {
-        const plant = this.getPlantById(plantId);
-        if (!plant?.healthLogs) return [];
-        return plant.healthLogs
-            .filter(log => log.type === 'growth' && log.image)
-            .map(log => ({
-                date: log.date,
-                image: log.image,
-                notes: log.notes
-            }))
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-    }
-
-    /**
-     * Analyze watering history to suggest next watering date.
-     * @param {string} plantId - The ID of the plant.
-     * @returns {Date|null} - Suggested next watering date.
-     */
-    suggestNextWatering(plantId) {
-        const plant = this.getPlantById(plantId);
-        if (!plant?.healthLogs) return null;
-
-        const wateringLogs = plant.healthLogs
-            .filter(log => log.type === 'watering')
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        if (wateringLogs.length < 2) return null;
-
-        // Calculate average days between waterings
-        let totalDays = 0;
-        for (let i = 0; i < wateringLogs.length - 1; i++) {
-            const daysDiff = (new Date(wateringLogs[i].date) - new Date(wateringLogs[i + 1].date)) / (1000 * 60 * 60 * 24);
-            totalDays += daysDiff;
-        }
-        const avgDays = Math.round(totalDays / (wateringLogs.length - 1));
-
-        // Suggest next date based on most recent watering
-        const lastWatering = new Date(wateringLogs[0].date);
-        lastWatering.setDate(lastWatering.getDate() + avgDays);
-        return lastWatering;
     }
 
     getRecentPlants(limit = 6) {
