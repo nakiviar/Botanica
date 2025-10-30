@@ -50,6 +50,13 @@ class PlantManager {
             this.saveToStorage();
             return entry;
         }
+                   location: plantData.location || {
+                       room: '',
+                       coordinates: null,
+                       sunlightLevel: '',
+                       direction: '',
+                       height: 0
+                   }
         return null;
     }
 
