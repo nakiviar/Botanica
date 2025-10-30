@@ -210,14 +210,6 @@ class BotanicalApp {
         }
       });
     }
-  const editBtn = document.getElementById('editPlantBtn');
-    if (editBtn) {
-      editBtn.addEventListener('click', () => {
-        if (this.currentPlantId) {
-          this.openEditForm(this.currentPlantId);
-        }
-      });
-     
 
     // Handle delete clicks within modal content
     document.getElementById("modal-content").addEventListener("click", (e) => {
@@ -234,33 +226,6 @@ class BotanicalApp {
       }
     });
   }
-    
-  handlePlantSubmit(e) {
-  const form = e.target;
-  const editId = form.dataset.editId;
-
-  const plantData = {
-    id: editId || Date.now().toString(),
-    name: document.getElementById('plantName').value,
-    species: document.getElementById('plantSpecies').value,
-    type: document.getElementById('plantType').value,
-    notes: document.getElementById('plantNotes').value,
-    image: this.selectedImage || (editId ? this.getPlantById(editId).image : '')
-  };
-
-  if (editId) {
-    this.updatePlant(plantData);
-    delete form.dataset.editId;
-    document.getElementById('addPlantBtn').textContent = 'Add to Collection';
-  } else {
-    this.addPlant(plantData);
-  }
-
-  this.renderPlants();
-  form.reset();
-  this.closeModal('addPlantModal');
-}
-
 
   loadThemePreference() {
     const savedTheme = localStorage.getItem("theme");
@@ -654,7 +619,6 @@ class BotanicalApp {
                         </div>` : `<p class="empty-state-small">No specific care notes recorded.</p>`
                     }
                     <div class="form-actions">
-                        <button id="editPlantBtn" class="btn edit-btn">Edit</button>
                         <button class="btn-secondary" id="modal-delete-btn" data-plant-id="${plantId}">
                             <i class="fas fa-trash"></i> Delete Plant
                         </button>
@@ -907,21 +871,14 @@ class BotanicalApp {
     document.getElementById("modal-delete-btn")?.addEventListener("click", () => {
         this.deletePlant(plantId);
     });
-    // 3. Plant Edit Button (from Info tab)
-    const editBtn = document.getElementById("editPlantBtn");
-    if (editBtn) {
-        editBtn.addEventListener("click", () => {
-            this.openEditForm(plantId);
-        });
-    }
 
-    // 4. Journal Form Submission
+    // 3. Journal Form Submission
     document.getElementById("journal-form")?.addEventListener("submit", (e) => {
         e.preventDefault();
         this.handleJournalSubmit(plantId);
     });
 
-    // 5. Journal Entry Delete Buttons (using delegation on the container)
+    // 4. Journal Entry Delete Buttons (using delegation on the container)
     document.getElementById("journal-entries-container")?.addEventListener("click", (e) => {
         const deleteBtn = e.target.closest('.btn-delete-entry');
         if (deleteBtn) {

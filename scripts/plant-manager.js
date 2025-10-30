@@ -25,29 +25,6 @@ class PlantManager {
         return plant;
     }
 
-    openEditForm(plantId) {
-    const plant = this.plants.find(p => p.id === plantId);
-      if (!plant) return;
-
-      // Fill in form fields
-      document.getElementById('plantName').value = plant.name;
-      document.getElementById('plantSpecies').value = plant.species;
-      document.getElementById('plantType').value = plant.type;
-      document.getElementById('plantNotes').value = plant.notes;
-
-      // Store ID for update mode
-      const form = document.getElementById('plantForm');
-      form.dataset.editId = plant.id;
-
-      // Change button label
-      const addBtn = document.getElementById('addPlantBtn');
-      addBtn.textContent = 'Update Plant';
-
-      // Open the Add/Edit modal if your app uses one
-      this.openModal('addPlantModal');
-    }
-
-
     /**
      * Adds a health log entry to a plant. A health log can be of types:
      * 'watering', 'fertilizer', 'growth', 'pest', 'general'.
