@@ -7,6 +7,8 @@ class PlantManager {
         this.wateringHistory = this.loadWateringHistory();
         this.reminders = this.loadReminders();
         this.checkRemindersInterval = null;
+        this.currentFilter = 'all';
+        this.currentSearch = '';
     }
 
     // Initialize the watering management system
@@ -50,7 +52,14 @@ class PlantManager {
     }
 
     // Add plant
-    addPlant(plant) {
+    addPlant(plantData) {
+        const plant = {
+            id: Date.now(),
+            ...plantData,
+            journal: plantData.journal || [],
+            healthLogs: plantData.healthLogs || []
+        };
+        
         this.plants.push(plant);
         this.savePlants();
         
@@ -58,6 +67,8 @@ class PlantManager {
         if (plant.wateringSchedule) {
             this.createReminder(plant.id);
         }
+        
+        return plant;
     }
 
     // Delete plant
@@ -72,8 +83,119 @@ class PlantManager {
     }
 
     // Get plant by ID
-    getPlant(id) {
-        return this.plants.find(plant => plant.id === id);
+    getPlantById(id) {
+        return this.plants.find(plant => plant.id == id);
+    }
+
+    // Get all plants with filters
+    getPlants() {
+        let filtered = [...this.plants];
+
+        // Apply filter
+        if (this.currentFilter !== 'all') {
+            filtered = filtered.filter(plant => plant.type === this.currentFilter);
+        }
+
+        // Apply search
+        if (this.currentSearch) {
+            const search = this.currentSearch.toLowerCase();
+            filtered = filtered.filter(plant =>
+                plant.name.toLowerCase().includes(search) ||
+                (plant.species && plant.species.toLowerCase().includes(search))
+            );
+        }
+
+        return filtered;
+    }
+
+    // Set filter
+    setFilter(filter) {
+        this.currentFilter = filter;
+    }
+
+    // Set search
+    setSearch(search) {
+        this.currentSearch = search;
+    }
+
+    // Get recent plants
+    getRecentPlants(limit = 6) {
+        return [...this.plants]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, limit);
+    }
+
+    // Get stats
+    getStats() {
+        let needsWater = 0;
+        
+        this.plants.forEach(plant => {
+            if (plant.wateringSchedule) {
+                const days = this.getDaysUntilWatering(plant);
+                if (days !== null && days <= 0) needsWater++;
+            }
+        });
+
+        return {
+            total: this.plants.length,
+            needsWater: needsWater,
+            lowLight: this.plants.filter(p => p.light === 'low').length
+        };
+    }
+
+    // Add journal entry
+    addJournalEntry(plantId, entryData) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant) return false;
+
+        if (!plant.journal) plant.journal = [];
+
+        const entry = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            ...entryData
+        };
+
+        plant.journal.unshift(entry);
+        this.savePlants();
+        return true;
+    }
+
+    // Delete journal entry
+    deleteJournalEntry(plantId, entryId) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant || !plant.journal) return false;
+
+        plant.journal = plant.journal.filter(e => e.id != entryId);
+        this.savePlants();
+        return true;
+    }
+
+    // Add health log
+    addHealthLog(plantId, logData) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant) return false;
+
+        if (!plant.healthLogs) plant.healthLogs = [];
+
+        const log = {
+            id: Date.now(),
+            ...logData
+        };
+
+        plant.healthLogs.unshift(log);
+        this.savePlants();
+        return log;
+    }
+
+    // Delete health log
+    deleteHealthLog(plantId, logId) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant || !plant.healthLogs) return false;
+
+        plant.healthLogs = plant.healthLogs.filter(l => l.id != logId);
+        this.savePlants();
+        return true;
     }
 
     // Add or update plant with watering schedule
@@ -96,7 +218,7 @@ class PlantManager {
 
     // Mark plant as watered
     markAsWatered(plantId, notes = '') {
-        const plant = this.plants.find(p => p.id === plantId);
+        const plant = this.plants.find(p => p.id == plantId);
         if (!plant || !plant.wateringSchedule) return false;
 
         const now = new Date().toISOString();
@@ -146,6 +268,9 @@ class PlantManager {
         if (!nextDate) return null;
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        nextDate.setHours(0, 0, 0, 0);
+        
         const diffTime = nextDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
@@ -167,14 +292,14 @@ class PlantManager {
 
     // Create reminder for plant
     createReminder(plantId) {
-        const plant = this.plants.find(p => p.id === plantId);
+        const plant = this.plants.find(p => p.id == plantId);
         if (!plant || !plant.wateringSchedule) return;
 
         const nextDate = this.getNextWateringDate(plant);
         if (!nextDate) return;
 
         // Remove existing reminder for this plant
-        this.reminders = this.reminders.filter(r => r.plantId !== plantId);
+        this.reminders = this.reminders.filter(r => r.plantId != plantId);
 
         // Add new reminder
         this.reminders.push({
@@ -192,12 +317,15 @@ class PlantManager {
     // Check for due reminders
     checkReminders() {
         const now = new Date();
+        now.setHours(0, 0, 0, 0);
         const dueReminders = [];
 
         this.reminders.forEach(reminder => {
             if (!reminder.enabled) return;
 
             const dueDate = new Date(reminder.dueDate);
+            dueDate.setHours(0, 0, 0, 0);
+            
             const diffTime = dueDate - now;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -216,9 +344,13 @@ class PlantManager {
             clearInterval(this.checkRemindersInterval);
         }
 
+        // Check immediately
+        this.renderWateringNotifications();
+
+        // Then check every minute
         this.checkRemindersInterval = setInterval(() => {
             this.renderWateringNotifications();
-        }, 60000); // Check every minute
+        }, 60000);
     }
 
     // Render watering notifications in the UI
@@ -243,11 +375,14 @@ class PlantManager {
                     <button onclick="plantManager.dismissAllNotifications()" class="dismiss-all">Dismiss All</button>
                 </div>
                 <div class="notification-list">
-                    ${dueReminders.map(reminder => `
+                    ${dueReminders.map(reminder => {
+                        const plant = this.plants.find(p => p.id == reminder.plantId);
+                        const days = plant ? this.getDaysUntilWatering(plant) : 0;
+                        return `
                         <div class="notification-item" data-plant-id="${reminder.plantId}">
                             <div class="notification-content">
                                 <strong>${reminder.plantName}</strong>
-                                <span>needs watering ${this.getDaysUntilWatering(this.plants.find(p => p.id === reminder.plantId)) <= 0 ? 'now' : 'today'}!</span>
+                                <span>needs watering ${days <= 0 ? 'now' : 'today'}!</span>
                             </div>
                             <div class="notification-actions">
                                 <button onclick="plantManager.quickWater('${reminder.plantId}')" class="btn-water">
@@ -258,7 +393,7 @@ class PlantManager {
                                 </button>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             </div>
         `;
@@ -275,12 +410,17 @@ class PlantManager {
             if (window.renderCollection) {
                 window.renderCollection();
             }
+            
+            // Update dashboard if on dashboard
+            if (window.app && window.app.currentPage === 'dashboard') {
+                window.app.updateDashboard();
+            }
         }
     }
 
     // Snooze reminder
     snoozeReminder(plantId, days) {
-        const plant = this.plants.find(p => p.id === plantId);
+        const plant = this.plants.find(p => p.id == plantId);
         if (!plant || !plant.wateringSchedule) return;
 
         const lastWatered = new Date(plant.wateringSchedule.lastWatered);
@@ -310,7 +450,7 @@ class PlantManager {
 
     // Update individual plant card
     updatePlantCard(plantId) {
-        const plant = this.plants.find(p => p.id === plantId);
+        const plant = this.plants.find(p => p.id == plantId);
         if (!plant) return;
 
         const card = document.querySelector(`[data-plant-id="${plantId}"]`);
@@ -333,7 +473,7 @@ class PlantManager {
     // Get watering statistics
     getWateringStats(plantId) {
         const history = this.wateringHistory[plantId] || [];
-        const plant = this.plants.find(p => p.id === plantId);
+        const plant = this.plants.find(p => p.id == plantId);
         
         if (!plant || !plant.wateringSchedule || history.length < 2) {
             return null;
@@ -364,13 +504,13 @@ class PlantManager {
         const data = {
             exportDate: new Date().toISOString(),
             plants: plantId 
-                ? [this.plants.find(p => p.id === plantId)]
+                ? [this.plants.find(p => p.id == plantId)]
                 : this.plants,
             history: plantId
                 ? { [plantId]: this.wateringHistory[plantId] }
                 : this.wateringHistory,
             reminders: plantId
-                ? this.reminders.filter(r => r.plantId === plantId)
+                ? this.reminders.filter(r => r.plantId == plantId)
                 : this.reminders
         };
 
