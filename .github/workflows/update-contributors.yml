@@ -2,9 +2,9 @@ name: Update Contributors (API-only)
 
 on:
   push:
-    branches: [ main ]         # ajusta si tu rama por defecto no es main
+    branches: [ main ]
   schedule:
-    - cron: "0 9 * * 1"        # Lunes 09:00 UTC (04:00 Lima) semanal
+    - cron: "0 9 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -28,14 +28,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // --- Config ---
             const owner = process.env.OWNER;
             const repo  = process.env.REPO;
-            const columnsPerRow = 6;     // ajusta columnas
-            const avatarSize    = 80;    // px
-            const excludeBots   = true;  // excluir cuentas tipo Bot
+            const columnsPerRow = 6;
+            const avatarSize    = 80;
+            const excludeBots   = true;
 
-            // --- Fetch all contributors (paginated) ---
+            // Paginación de contribuidores
             let page = 1;
             const per_page = 100;
             let all = [];
@@ -43,12 +42,12 @@ jobs:
               const { data } = await github.request('GET /repos/{owner}/{repo}/contributors', {
                 owner, repo, per_page, page
               });
+              core.info('Fetched page ' + page + ' with ' + data.length + ' contributors');
               if (!data || data.length === 0) break;
               all = all.concat(data);
               page++;
             }
 
-            // Opcional: excluir bots y Dependabot
             if (excludeBots) {
               all = all.filter(u =>
                 !(u.type === 'Bot') &&
@@ -57,10 +56,9 @@ jobs:
               );
             }
 
-            // --- Build grid markdown ---
             function chunk(arr, size) {
               const out = [];
-              for (let i=0;i<arr.length;i+=size) out.push(arr.slice(i, i+size));
+              for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
               return out;
             }
 
@@ -69,22 +67,22 @@ jobs:
             for (const row of rows) {
               md += '    <tr>\n';
               for (const u of row) {
-                const login = u.login;
-                const html  = u.html_url || `https://github.com/${login}`;
-                const avatar = (u.avatar_url || `https://github.com/${login}.png`) + `?size=${avatarSize}`;
-                md += `      <td align="center" valign="top" style="padding:8px;">
-  <a href="${html}">
-    <img src="${avatar}" width="${avatarSize}" height="${avatarSize}" style="border-radius:50%;" alt="${login}" />
-    <br/>
-    <sub><b>${login}</b></sub>
-  </a>
-</td>\n`;
+                const login  = u.login;
+                const html   = (u.html_url ? u.html_url : ('https://github.com/' + login));
+                const avatar = (u.avatar_url ? u.avatar_url : ('https://github.com/' + login + '.png')) + '?size=' + avatarSize;
+
+                md += '      <td align="center" valign="top" style="padding:8px;">\n' +
+                      '        <a href="' + html + '">\n' +
+                      '          <img src="' + avatar + '" width="' + avatarSize + '" height="' + avatarSize + '" style="border-radius:50%;" alt="' + login + '" />\n' +
+                      '          <br/>\n' +
+                      '          <sub><b>' + login + '</b></sub>\n' +
+                      '        </a>\n' +
+                      '      </td>\n';
               }
               md += '    </tr>\n';
             }
             md += '  </tbody>\n</table>\n';
 
-            // --- Replace between markers in README.md ---
             const fs = require('fs');
             const path = 'README.md';
             if (!fs.existsSync(path)) {
@@ -95,16 +93,15 @@ jobs:
             const end   = '<!-- CONTRIBUTORS:END -->';
             let readme = fs.readFileSync(path, 'utf8');
 
-            const regex = new RegExp(`${start}[\\s\\S]*?${end}`, 'm');
+            const regex = new RegExp(start + '[\\s\\S]*?' + end, 'm');
             if (!regex.test(readme)) {
               core.setFailed('No se encontraron los marcadores <!-- CONTRIBUTORS:START --> / <!-- CONTRIBUTORS:END --> en README.md');
               return;
             }
-            const newBlock = `${start}\n${md}${end}`;
+            const newBlock = start + '\n' + md + end;
             readme = readme.replace(regex, newBlock);
             fs.writeFileSync(path, readme, 'utf8');
-
-            core.setOutput('changed', 'true');
+            core.info('README actualizado entre marcadores.');
 
       - name: Create branch, commit and push
         run: |
@@ -126,7 +123,6 @@ jobs:
       - name: Open PR with GitHub CLI (gh)
         if: ${{ success() }}
         run: |
-          # GH_TOKEN ya está en env; runners hospedados traen gh preinstalado
           gh pr create \
             --title "docs(readme): update contributors (API-based)" \
             --body  "Auto-generated via REST API (no third-party action). Updates the Contributors section between markers." \
