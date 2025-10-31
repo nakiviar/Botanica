@@ -17,6 +17,15 @@ class BotanicalApp {
     this.createFallingLeaves();
   }
 
+  setDefaultWateringDate() {
+    // Set default date for last-watered input when page loads
+    const lastWateredInput = document.getElementById('last-watered');
+    if (lastWateredInput && !lastWateredInput.value) {
+      lastWateredInput.value = new Date().toISOString().split('T')[0];
+    }
+  }
+
+
   createFallingLeaves() {
     const fallingLeavesContainer = document.createElement("div");
     fallingLeavesContainer.className = "falling-leaves";
@@ -355,6 +364,8 @@ class BotanicalApp {
             this.imageHandler.clearImage();
           }
           document.getElementById("plant-form")?.reset();
+          // Set default watering date
+          this.setDefaultWateringDate();
           break;
         // No case needed for help-center, privacy-policy, or terms-of-service
         // as they are just simple content pages with no special init logic.
@@ -463,6 +474,8 @@ class BotanicalApp {
       .map((plant) => this.createPlantCard(plant))
       .join("");
     this.bindPlantCardEvents(container);
+
+    window.renderCollection = () => this.renderCollection();
   }
 
   bindPlantCardEvents(container) {
@@ -486,7 +499,46 @@ class BotanicalApp {
     // Use placeholder if no image
     const imageSrc = plant.image || "assets/images/demo_pic.png";
 
+    // Get watering status if schedule exists
+    let wateringStatusHTML = '';
+    if (plant.wateringSchedule && this.plantManager.getWateringStatus) {
+      const status = this.plantManager.getWateringStatus(plant);
+      wateringStatusHTML = `
+        <div class="watering-status status-${status.status}">${status.text}</div>
+        <button class="water-button" onclick="event.stopPropagation(); plantManager.quickWater('${plant.id}')">
+          <span>💧</span> Mark as Watered
+        </button>
+      `;
+    }
+
     return `
+            <div class="plant-card" data-plant-id="${plant.id}">
+                <img src="${imageSrc}" 
+                    alt="${plant.name}" 
+                    class="plant-image"
+                    onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+                <div class="plant-info">
+                    <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
+                    ${
+                      plant.species
+                        ? `<p class="plant-species">${this.escapeHtml(
+                              plant.species
+                            )}</p>`
+                        : ""
+                    }
+                    <div class="plant-meta">
+                        <span class="plant-type">${plant.type}</span>
+                        <span class="plant-light">
+                            <i class="${
+                              lightIcons[plant.light] || "fas fa-sun"
+                            }"></i>
+                            ${plant.light}
+                        </span>
+                    </div>
+                    ${wateringStatusHTML}
+                </div>
+            </div>
+        `;
       <div class="plant-card" data-plant-id="${plant.id}">
         <img src="${imageSrc}" 
           alt="${this.escapeHtml(plant.name)}" 
@@ -537,6 +589,18 @@ class BotanicalApp {
       return;
     }
 
+    // Get watering schedule data
+    const wateringFrequency = document.getElementById('watering-frequency');
+    const lastWatered = document.getElementById('last-watered');
+    const reminderTime = document.getElementById('reminder-time');
+    
+    const wateringSchedule = {
+      frequency: wateringFrequency ? parseInt(wateringFrequency.value) : 7,
+      lastWatered: lastWatered && lastWatered.value ? lastWatered.value : new Date().toISOString().split('T')[0],
+      reminderTime: reminderTime ? reminderTime.value : '09:00',
+      notes: ''
+    };
+
     // Get form data
     const plantData = {
       name: plantName.value.trim(),
@@ -546,6 +610,7 @@ class BotanicalApp {
       notes: document.getElementById("plant-notes").value.trim(),
       image: this.imageHandler.getImageData(),
       createdAt: new Date().toISOString(),
+      wateringSchedule: wateringSchedule // ADD THIS LINE
     };
 
     try {
@@ -553,7 +618,7 @@ class BotanicalApp {
       this.plantManager.addPlant(plantData);
 
       // Show success message
-      this.showNotification("Plant added successfully!", "success");
+      this.showNotification("🌱 Plant added with watering schedule!", "success");
 
       // Reset form and return to collection
       this.imageHandler.clearImage();

@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/components.css" />
     <link rel="stylesheet" href="styles/responsive.css" />
-    <link rel="stylesheet" href="styles/calendar.css" />
+    <link rel="stylesheet" href="styles/calendar.css"/>
+    <link rel="stylesheet" href="styles/watering-system.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,6 +17,7 @@
   </head>
   <body>
     <header class="header">
+      <!-- Watering Notifications -->
       <div class="container">
         <div class="logo">
           <i class="fas fa-seedling"></i>
@@ -58,6 +60,7 @@
         </nav>
       </div>
     </header>
+    <div id="watering-notifications" style="display: none;"></div>
 
     <main class="main">
       <div class="container">
@@ -78,7 +81,7 @@
               </div>
               <div class="stat-card">
                 <i class="fas fa-tint"></i>
-                <h3 id="needs-water">0</h3>
+                <h3 id="needs-water" class="needs-water-count">0</h3>
                 <p>Need Water</p>
               </div>
               <div class="stat-card">
@@ -301,6 +304,27 @@
                 rows="4"
                 placeholder="Watering schedule, special care instructions..."
               ></textarea>
+            </div>
+
+            <div class="watering-schedule-form">
+              <h3 style="color: var(--primary); margin-bottom: 16px;">💧 Watering Schedule</h3>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="watering-frequency">Watering Frequency (days)</label>
+                  <input type="number" id="watering-frequency" min="1" max="365" value="7" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="reminder-time">Reminder Time</label>
+                  <input type="time" id="reminder-time" value="09:00" />
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="last-watered">Last Watered Date</label>
+                <input type="date" id="last-watered" />
+              </div>
             </div>
 
             <div class="form-actions">
@@ -943,6 +967,37 @@
     <script src="scripts/audio-manager.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/scroll_btn.js" defer></script>
+
+    <script>
+      // Initialize watering system
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize plant manager
+        if (typeof plantManager !== 'undefined') {
+          plantManager.init();
+        }
+        
+        // Update dashboard stats every 5 seconds
+        setInterval(updateDashboardStats, 5000);
+      });
+
+      // Update dashboard statistics
+      function updateDashboardStats() {
+        if (typeof plantManager === 'undefined' || !plantManager.plants) return;
+        
+        const plants = plantManager.plants || [];
+        let needsWater = 0;
+        
+        plants.forEach(plant => {
+          const days = plantManager.getDaysUntilWatering(plant);
+          if (days !== null && days <= 0) needsWater++;
+        });
+        
+        const needsWaterEl = document.getElementById('needs-water');
+        if (needsWaterEl) {
+          needsWaterEl.textContent = needsWater;
+        }
+      }
+    </script>
 
     <div class="growing-plant">
       <div class="plant-pot"></div>
