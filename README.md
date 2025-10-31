@@ -225,6 +225,13 @@ Thank you for helping to make Botanica even better for all plant lovers 💚
     </tr>
     <tr>
       <td align="center" valign="top" style="padding:8px;">
+        <a href="https://github.com/nakiviar">
+          <img src="https://avatars.githubusercontent.com/u/54564415?v=4?size=80" width="80" height="80" style="border-radius:50%;" alt="nakiviar" />
+          <br/>
+          <sub><b>nakiviar</b></sub>
+        </a>
+      </td>
+      <td align="center" valign="top" style="padding:8px;">
         <a href="https://github.com/himanshu-is-noob">
           <img src="https://avatars.githubusercontent.com/u/112807898?v=4?size=80" width="80" height="80" style="border-radius:50%;" alt="himanshu-is-noob" />
           <br/>
@@ -243,13 +250,6 @@ Thank you for helping to make Botanica even better for all plant lovers 💚
           <img src="https://avatars.githubusercontent.com/u/192605094?v=4?size=80" width="80" height="80" style="border-radius:50%;" alt="titan-0" />
           <br/>
           <sub><b>titan-0</b></sub>
-        </a>
-      </td>
-      <td align="center" valign="top" style="padding:8px;">
-        <a href="https://github.com/nakiviar">
-          <img src="https://avatars.githubusercontent.com/u/54564415?v=4?size=80" width="80" height="80" style="border-radius:50%;" alt="nakiviar" />
-          <br/>
-          <sub><b>nakiviar</b></sub>
         </a>
       </td>
       <td align="center" valign="top" style="padding:8px;">
