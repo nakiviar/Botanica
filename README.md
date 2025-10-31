@@ -131,13 +131,8 @@ Thank you for helping to make Botanica even better for all plant lovers 💚
 
 ## 👥 Contributors
 
-<!-- CONTRIBUTORS:START -->
-<!-- CONTRIBUTORS:END -->
 
 
-**Legend:**  
-📖 Documentation | 💻 Code | 🎨 Design | 🐛 Bug Fixes | ✅ Tests  
 
----
 
 [🔝 Back to Top](#-botanica----plant-collection-app)
