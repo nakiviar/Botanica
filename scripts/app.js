@@ -17,12 +17,27 @@ class BotanicalApp {
     this.createFallingLeaves();
   }
 
+  setDefaultWateringDate() {
+    // Set default date for last-watered input when page loads
+    const lastWateredInput = document.getElementById('last-watered');
+    if (lastWateredInput && !lastWateredInput.value) {
+      lastWateredInput.value = new Date().toISOString().split('T')[0];
+    }
+  }
+
+
   createFallingLeaves() {
-    const fallingLeavesContainer = document.createElement('div');
-    fallingLeavesContainer.className = 'falling-leaves';
+    const fallingLeavesContainer = document.createElement("div");
+    fallingLeavesContainer.className = "falling-leaves";
     document.body.appendChild(fallingLeavesContainer);
 
-    const leafTypes = ['leaf-type-1', 'leaf-type-2', 'leaf-type-3', 'leaf-type-4', 'leaf-type-5'];
+    const leafTypes = [
+      "leaf-type-1",
+      "leaf-type-2",
+      "leaf-type-3",
+      "leaf-type-4",
+      "leaf-type-5",
+    ];
 
     // Create 15 leaves for a gentle effect
     for (let i = 0; i < 15; i++) {
@@ -38,7 +53,7 @@ class BotanicalApp {
   }
 
   createLeaf(container, leafTypes) {
-    const leaf = document.createElement('div');
+    const leaf = document.createElement("div");
     const leafType = leafTypes[Math.floor(Math.random() * leafTypes.length)];
 
     leaf.className = `leaf ${leafType}`;
@@ -53,7 +68,7 @@ class BotanicalApp {
     leaf.style.animationDuration = `${duration}s, ${duration / 2}s`;
     leaf.style.animationDelay = `${delay}s`;
     leaf.style.fontSize = `${size}em`;
-    leaf.style.opacity = '0.7';
+    leaf.style.opacity = "0.7";
 
     container.appendChild(leaf);
 
@@ -70,7 +85,7 @@ class BotanicalApp {
     document.querySelectorAll(".footer-nav-link").forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        
+
         // Use .closest() to make sure we get the link
         const targetLink = e.target.closest(".footer-nav-link");
         if (!targetLink) return;
@@ -89,14 +104,18 @@ class BotanicalApp {
     });
 
     // --- NEW Contact Modal Listeners ---
-    document.getElementById("contact-us-link")?.addEventListener("click", (e) => {
-      e.preventDefault();
-      this.showContactModal();
-    });
+    document
+      .getElementById("contact-us-link")
+      ?.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.showContactModal();
+      });
 
-    document.getElementById("close-contact-modal")?.addEventListener("click", () => {
-      this.hideContactModal();
-    });
+    document
+      .getElementById("close-contact-modal")
+      ?.addEventListener("click", () => {
+        this.hideContactModal();
+      });
 
     document.getElementById("contact-modal")?.addEventListener("click", (e) => {
       if (e.target === e.currentTarget) {
@@ -194,6 +213,32 @@ class BotanicalApp {
       });
     }
 
+    // Additional filter controls: light, watering frequency, difficulty
+
+    const filterLight = document.getElementById("filter-light");
+    if (filterLight) {
+      filterLight.addEventListener("change", (e) => {
+        this.plantManager.setLightFilter(e.target.value);
+        this.renderCollection();
+      });
+    }
+
+    const filterWatering = document.getElementById("filter-watering");
+    if (filterWatering) {
+      filterWatering.addEventListener("change", (e) => {
+        this.plantManager.setWateringFilter(e.target.value);
+        this.renderCollection();
+      });
+    }
+
+    const filterDifficulty = document.getElementById("filter-difficulty");
+    if (filterDifficulty) {
+      filterDifficulty.addEventListener("change", (e) => {
+        this.plantManager.setDifficultyFilter(e.target.value);
+        this.renderCollection();
+      });
+    }
+
     // Modal close events
     const closeModal = document.getElementById("close-modal");
     if (closeModal) {
@@ -217,7 +262,7 @@ class BotanicalApp {
         // Delegated deletion is handled inside bindPlantDetailEvents now
       }
     });
-  
+
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -295,7 +340,13 @@ class BotanicalApp {
           this.wishlistManager.renderWishlist(this.wishlistManager.getWishes());
           // Initialize image handler for the wishlist form
           if (this.imageHandler) {
-            this.imageHandler.initHandler("wish-upload-area", "wish-image", "wish-image-preview", "wish-remove-image", "wish-preview-img");
+            this.imageHandler.initHandler(
+              "wish-upload-area",
+              "wish-image",
+              "wish-image-preview",
+              "wish-remove-image",
+              "wish-preview-img"
+            );
             this.imageHandler.clearImage();
           }
           document.getElementById("wishlist-form")?.reset();
@@ -303,10 +354,18 @@ class BotanicalApp {
         case "add-plant":
           // Initialize image handler for the add plant form
           if (this.imageHandler) {
-            this.imageHandler.initHandler("upload-area", "plant-image", "image-preview", "remove-image", "preview-img");
+            this.imageHandler.initHandler(
+              "upload-area",
+              "plant-image",
+              "image-preview",
+              "remove-image",
+              "preview-img"
+            );
             this.imageHandler.clearImage();
           }
           document.getElementById("plant-form")?.reset();
+          // Set default watering date
+          this.setDefaultWateringDate();
           break;
         // No case needed for help-center, privacy-policy, or terms-of-service
         // as they are just simple content pages with no special init logic.
@@ -415,6 +474,8 @@ class BotanicalApp {
       .map((plant) => this.createPlantCard(plant))
       .join("");
     this.bindPlantCardEvents(container);
+
+    window.renderCollection = () => this.renderCollection();
   }
 
   bindPlantCardEvents(container) {
@@ -436,9 +497,19 @@ class BotanicalApp {
     };
 
     // Use placeholder if no image
-    const imageSrc =
-      plant.image ||
-      "assets/images/demo_pic.png";
+    const imageSrc = plant.image || "assets/images/demo_pic.png";
+
+    // Get watering status if schedule exists
+    let wateringStatusHTML = '';
+    if (plant.wateringSchedule && this.plantManager.getWateringStatus) {
+      const status = this.plantManager.getWateringStatus(plant);
+      wateringStatusHTML = `
+        <div class="watering-status status-${status.status}">${status.text}</div>
+        <button class="water-button" onclick="event.stopPropagation(); plantManager.quickWater('${plant.id}')">
+          <span>💧</span> Mark as Watered
+        </button>
+      `;
+    }
 
     return `
             <div class="plant-card" data-plant-id="${plant.id}">
@@ -455,7 +526,7 @@ class BotanicalApp {
                             )}</p>`
                         : ""
                     }
-                    <div class_."plant-meta">
+                    <div class="plant-meta">
                         <span class="plant-type">${plant.type}</span>
                         <span class="plant-light">
                             <i class="${
@@ -464,9 +535,43 @@ class BotanicalApp {
                             ${plant.light}
                         </span>
                     </div>
+                    ${wateringStatusHTML}
                 </div>
             </div>
         `;
+      <div class="plant-card" data-plant-id="${plant.id}">
+        <img src="${imageSrc}" 
+          alt="${this.escapeHtml(plant.name)}" 
+          class="plant-image"
+          onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+        <div class="plant-info">
+          <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
+          ${
+            plant.species
+              ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
+              : ""
+          }
+             <div class="plant-meta">
+            <span class="plant-type">${this.escapeHtml(plant.type)}</span>
+            <span class="plant-light">
+              <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
+              ${this.escapeHtml(plant.light)}
+            </span>
+          </div>
+          <div class="plant-badges">
+            <span class="badge small">Water: ${this.escapeHtml(
+              plant.wateringFrequency || "weekly"
+            )}</span>
+            <span class="badge small">${this.escapeHtml(
+              plant.difficulty
+                ? plant.difficulty.charAt(0).toUpperCase() +
+                    plant.difficulty.slice(1)
+                : "Easy"
+            )}</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   async handlePlantSubmit() {
@@ -484,6 +589,18 @@ class BotanicalApp {
       return;
     }
 
+    // Get watering schedule data
+    const wateringFrequency = document.getElementById('watering-frequency');
+    const lastWatered = document.getElementById('last-watered');
+    const reminderTime = document.getElementById('reminder-time');
+    
+    const wateringSchedule = {
+      frequency: wateringFrequency ? parseInt(wateringFrequency.value) : 7,
+      lastWatered: lastWatered && lastWatered.value ? lastWatered.value : new Date().toISOString().split('T')[0],
+      reminderTime: reminderTime ? reminderTime.value : '09:00',
+      notes: ''
+    };
+
     // Get form data
     const plantData = {
       name: plantName.value.trim(),
@@ -493,6 +610,7 @@ class BotanicalApp {
       notes: document.getElementById("plant-notes").value.trim(),
       image: this.imageHandler.getImageData(),
       createdAt: new Date().toISOString(),
+      wateringSchedule: wateringSchedule // ADD THIS LINE
     };
 
     try {
@@ -500,7 +618,7 @@ class BotanicalApp {
       this.plantManager.addPlant(plantData);
 
       // Show success message
-      this.showNotification("Plant added successfully!", "success");
+      this.showNotification("🌱 Plant added with watering schedule!", "success");
 
       // Reset form and return to collection
       this.imageHandler.clearImage();
@@ -519,7 +637,13 @@ class BotanicalApp {
    */
   async handleWishlistSubmit() {
     // Re-initialize image handler for the wishlist form
-    this.imageHandler.initHandler("wish-upload-area", "wish-image", "wish-image-preview", "wish-remove-image", "wish-preview-img");
+    this.imageHandler.initHandler(
+      "wish-upload-area",
+      "wish-image",
+      "wish-image-preview",
+      "wish-remove-image",
+      "wish-preview-img"
+    );
 
     // Validate image (it's optional)
     const imageValidation = this.imageHandler.validateImage();
@@ -555,7 +679,6 @@ class BotanicalApp {
       this.imageHandler.clearImage();
       document.getElementById("wishlist-form").reset();
       this.wishlistManager.renderWishlist(this.wishlistManager.getWishes());
-
     } catch (error) {
       this.showNotification("Error adding wish: " + error.message, "error");
     }
@@ -583,7 +706,7 @@ class BotanicalApp {
 
     // Use placeholder if no image
     const imageSrc = plant.image || "assets/images/demo_pic.png";
-    
+
     // --- Modal Structure with Tabs ---
     modalContent.innerHTML = `
             <div class="plant-detail-container" data-plant-id="${plantId}">
@@ -594,29 +717,57 @@ class BotanicalApp {
                         onerror="this.src='https://via.placeholder.com/400x300/8bb574/ffffff?text=🌿'">
                     <div class="detail-info">
                         <h2>${this.escapeHtml(plant.name)}</h2>
-                        ${plant.species ? `<p class="detail-species">${this.escapeHtml(plant.species)}</p>` : ""}
+                        ${
+                          plant.species
+                            ? `<p class="detail-species">${this.escapeHtml(
+                                plant.species
+                              )}</p>`
+                            : ""
+                        }
                         <div class="detail-meta">
-                            <span class="detail-type">${plant.type}</span>
+                            <span class="detail-type">${this.escapeHtml(
+                              plant.type
+                            )}</span>
                             <span class="detail-light">
-                                <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i> ${plant.light} Light
+                                <i class="${
+                                  lightIcons[plant.light] || "fas fa-sun"
+                                }"></i> ${this.escapeHtml(plant.light)} Light
                             </span>
+                            <span class="detail-watering">Water: ${this.escapeHtml(
+                              plant.wateringFrequency || "weekly"
+                            )}</span>
+                            <span class="detail-difficulty">${this.escapeHtml(
+                              plant.difficulty
+                                ? plant.difficulty.charAt(0).toUpperCase() +
+                                    plant.difficulty.slice(1)
+                                : "Easy"
+                            )}</span>
                         </div>
-                        <p><small>Added: ${new Date(plant.createdAt).toLocaleDateString()}</small></p>
+                        <p><small>Added: ${new Date(
+                          plant.createdAt
+                        ).toLocaleDateString()}</small></p>
                     </div>
                 </div>
 
                 <div class="detail-tabs">
                     <button class="tab-btn active" data-tab="info">Info</button>
-          <button class="tab-btn" data-tab="journal">Journal (${plant.journal?.length || 0})</button>
-          <button class="tab-btn" data-tab="health">Health (${plant.healthLogs?.length || 0})</button>
+          <button class="tab-btn" data-tab="journal">Journal (${
+            plant.journal?.length || 0
+          })</button>
+          <button class="tab-btn" data-tab="health">Health (${
+            plant.healthLogs?.length || 0
+          })</button>
                 </div>
 
                 <div id="tab-info" class="tab-content active">
-                    ${plant.notes ? `
+                    ${
+                      plant.notes
+                        ? `
                         <div class="detail-notes">
                             <h3>Care Notes</h3>
                             <p>${this.escapeHtml(plant.notes)}</p>
-                        </div>` : `<p class="empty-state-small">No specific care notes recorded.</p>`
+                        </div>`
+                        : `<p class="empty-state-small">No specific care notes recorded.</p>`
                     }
                     <div class="form-actions">
                         <button class="btn-secondary" id="modal-delete-btn" data-plant-id="${plantId}">
@@ -680,7 +831,9 @@ class BotanicalApp {
 
             <div class="form-group">
               <label for="health-date">Date *</label>
-              <input type="date" id="health-date" required value="${new Date().toISOString().split('T')[0]}" />
+              <input type="date" id="health-date" required value="${
+                new Date().toISOString().split("T")[0]
+              }" />
             </div>
 
             <div class="form-group">
@@ -719,23 +872,35 @@ class BotanicalApp {
         </div>
             </div>
         `;
-        
-        // Bind all necessary dynamic events
-        this.bindPlantDetailEvents(plantId);
-        
-        // Initialize image handler for the journal form
-        if (this.imageHandler) {
-            this.imageHandler.initHandler("journal-upload-area", "journal-image", "journal-image-preview", "journal-remove-image", "journal-preview-img");
-            this.imageHandler.clearImage();
-        }
 
-    // Initialize image handler for the health form (growth/pest photos)
+    // Bind all necessary dynamic events
+    this.bindPlantDetailEvents(plantId);
+
+    // Initialize image handler for the journal form
     if (this.imageHandler) {
-      this.imageHandler.initHandler("health-upload-area", "health-image", "health-image-preview", "health-remove-image", "health-preview-img");
+      this.imageHandler.initHandler(
+        "journal-upload-area",
+        "journal-image",
+        "journal-image-preview",
+        "journal-remove-image",
+        "journal-preview-img"
+      );
       this.imageHandler.clearImage();
     }
 
-        this.showModal();
+    // Initialize image handler for the health form (growth/pest photos)
+    if (this.imageHandler) {
+      this.imageHandler.initHandler(
+        "health-upload-area",
+        "health-image",
+        "health-image-preview",
+        "health-remove-image",
+        "health-preview-img"
+      );
+      this.imageHandler.clearImage();
+    }
+
+    this.showModal();
   }
 
   /**
@@ -745,24 +910,36 @@ class BotanicalApp {
    */
   renderJournalHistory(journal) {
     if (journal.length === 0) {
-        return `<div class="empty-state-small">No journal entries recorded yet.</div>`;
+      return `<div class="empty-state-small">No journal entries recorded yet.</div>`;
     }
-    
-    return journal.map(entry => `
+
+    return journal
+      .map(
+        (entry) => `
             <div class="journal-card" data-entry-id="${entry.id}">
                 <div class="journal-header">
-                    <span class="journal-date">${new Date(entry.date).toLocaleDateString()}</span>
-                    <button class="btn-delete-entry" data-entry-id="${entry.id}" aria-label="Delete entry">
+                    <span class="journal-date">${new Date(
+                      entry.date
+                    ).toLocaleDateString()}</span>
+                    <button class="btn-delete-entry" data-entry-id="${
+                      entry.id
+                    }" aria-label="Delete entry">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
                 <p class="journal-note">${this.escapeHtml(entry.note)}</p>
-                ${entry.image ? `
+                ${
+                  entry.image
+                    ? `
                     <div class="journal-image-preview">
                         <img src="${entry.image}" alt="Progress photo">
-                    </div>` : ''}
+                    </div>`
+                    : ""
+                }
             </div>
-        `).join('');
+        `
+      )
+      .join("");
   }
 
   /**
@@ -775,21 +952,33 @@ class BotanicalApp {
       return `<div class="empty-state-small">No health logs recorded yet.</div>`;
     }
 
-    return logs.map(log => `
+    return logs
+      .map(
+        (log) => `
       <div class="health-card" data-log-id="${log.id}">
         <div class="health-header">
           <span class="health-type">${this.escapeHtml(log.type)}</span>
-          <span class="health-date">${new Date(log.date).toLocaleDateString()}</span>
-          <button class="btn-delete-health" data-log-id="${log.id}" aria-label="Delete health log">
+          <span class="health-date">${new Date(
+            log.date
+          ).toLocaleDateString()}</span>
+          <button class="btn-delete-health" data-log-id="${
+            log.id
+          }" aria-label="Delete health log">
             <i class="fas fa-trash"></i>
           </button>
         </div>
-        <p class="health-notes">${this.escapeHtml(log.notes || '')}</p>
-        ${log.image ? `
+        <p class="health-notes">${this.escapeHtml(log.notes || "")}</p>
+        ${
+          log.image
+            ? `
           <div class="health-image-preview"><img src="${log.image}" alt="Health photo" /></div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
-    `).join('');
+    `
+      )
+      .join("");
   }
 
   /**
@@ -799,37 +988,50 @@ class BotanicalApp {
   async handleHealthSubmit(plantId) {
     // Ensure image handler targets the health form
     if (this.imageHandler) {
-      this.imageHandler.initHandler("health-upload-area", "health-image", "health-image-preview", "health-remove-image", "health-preview-img");
+      this.imageHandler.initHandler(
+        "health-upload-area",
+        "health-image",
+        "health-image-preview",
+        "health-remove-image",
+        "health-preview-img"
+      );
     }
 
-    const type = document.getElementById('health-type')?.value;
-    const date = document.getElementById('health-date')?.value;
-    const notes = document.getElementById('health-notes')?.value.trim();
+    const type = document.getElementById("health-type")?.value;
+    const date = document.getElementById("health-date")?.value;
+    const notes = document.getElementById("health-notes")?.value.trim();
 
     if (!type || !date) {
-      this.showNotification('Please provide an event type and date.', 'error');
+      this.showNotification("Please provide an event type and date.", "error");
       return;
     }
 
-    const imageValidation = this.imageHandler ? this.imageHandler.validateImage() : { valid: true };
+    const imageValidation = this.imageHandler
+      ? this.imageHandler.validateImage()
+      : { valid: true };
     if (this.imageHandler && !imageValidation.valid) {
-      this.showNotification(imageValidation.message, 'error');
+      this.showNotification(imageValidation.message, "error");
       return;
     }
 
     const image = this.imageHandler ? this.imageHandler.getImageData() : null;
 
-    const log = this.plantManager.addHealthLog(plantId, { type, date: new Date(date).toISOString(), notes, image });
+    const log = this.plantManager.addHealthLog(plantId, {
+      type,
+      date: new Date(date).toISOString(),
+      notes,
+      image,
+    });
 
     if (log) {
-      this.showNotification('Health log added!', 'success');
+      this.showNotification("Health log added!", "success");
       // Reset form UI
-      document.getElementById('health-form')?.reset();
+      document.getElementById("health-form")?.reset();
       if (this.imageHandler) this.imageHandler.clearImage();
       // Re-open the detail modal to refresh counts and history
       this.showPlantDetail(plantId);
     } else {
-      this.showNotification('Error adding health log.', 'error');
+      this.showNotification("Error adding health log.", "error");
     }
   }
 
@@ -839,13 +1041,17 @@ class BotanicalApp {
    * @param {string} logId
    */
   async deleteHealthLog(plantId, logId) {
-    if (await this.showCustomConfirm('Are you sure you want to delete this health log?')) {
+    if (
+      await this.showCustomConfirm(
+        "Are you sure you want to delete this health log?"
+      )
+    ) {
       const success = this.plantManager.deleteHealthLog(plantId, logId);
       if (success) {
-        this.showNotification('Health log deleted.', 'success');
+        this.showNotification("Health log deleted.", "success");
         this.showPlantDetail(plantId);
       } else {
-        this.showNotification('Error deleting health log.', 'error');
+        this.showNotification("Error deleting health log.", "error");
       }
     }
   }
@@ -856,51 +1062,61 @@ class BotanicalApp {
    */
   bindPlantDetailEvents(plantId) {
     // 1. Tab switching logic
-    document.querySelectorAll('.detail-tabs .tab-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            document.querySelectorAll('.detail-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll(".detail-tabs .tab-btn").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        document
+          .querySelectorAll(".detail-tabs .tab-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((content) => content.classList.remove("active"));
 
-            e.target.classList.add('active');
-            const targetId = e.target.getAttribute('data-tab');
-            document.getElementById(`tab-${targetId}`).classList.add('active');
-        });
+        e.target.classList.add("active");
+        const targetId = e.target.getAttribute("data-tab");
+        document.getElementById(`tab-${targetId}`).classList.add("active");
+      });
     });
 
     // 2. Plant Delete Button (from Info tab)
-    document.getElementById("modal-delete-btn")?.addEventListener("click", () => {
+    document
+      .getElementById("modal-delete-btn")
+      ?.addEventListener("click", () => {
         this.deletePlant(plantId);
-    });
+      });
 
     // 3. Journal Form Submission
     document.getElementById("journal-form")?.addEventListener("submit", (e) => {
-        e.preventDefault();
-        this.handleJournalSubmit(plantId);
+      e.preventDefault();
+      this.handleJournalSubmit(plantId);
     });
 
     // 4. Journal Entry Delete Buttons (using delegation on the container)
-    document.getElementById("journal-entries-container")?.addEventListener("click", (e) => {
-        const deleteBtn = e.target.closest('.btn-delete-entry');
+    document
+      .getElementById("journal-entries-container")
+      ?.addEventListener("click", (e) => {
+        const deleteBtn = e.target.closest(".btn-delete-entry");
         if (deleteBtn) {
-            const entryId = deleteBtn.dataset.entryId;
-            this.deleteJournalEntry(plantId, entryId);
+          const entryId = deleteBtn.dataset.entryId;
+          this.deleteJournalEntry(plantId, entryId);
         }
+      });
+
+    // 5. Health form submission
+    document.getElementById("health-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.handleHealthSubmit(plantId);
     });
 
-  // 5. Health form submission
-  document.getElementById("health-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    this.handleHealthSubmit(plantId);
-  });
-
-  // 6. Health entry delete (delegation)
-  document.getElementById("health-entries-container")?.addEventListener("click", (e) => {
-    const deleteBtn = e.target.closest('.btn-delete-health');
-    if (deleteBtn) {
-      const logId = deleteBtn.dataset.logId;
-      this.deleteHealthLog(plantId, logId);
-    }
-  });
+    // 6. Health entry delete (delegation)
+    document
+      .getElementById("health-entries-container")
+      ?.addEventListener("click", (e) => {
+        const deleteBtn = e.target.closest(".btn-delete-health");
+        if (deleteBtn) {
+          const logId = deleteBtn.dataset.logId;
+          this.deleteHealthLog(plantId, logId);
+        }
+      });
   }
 
   /**
@@ -909,11 +1125,17 @@ class BotanicalApp {
    */
   async handleJournalSubmit(plantId) {
     // Re-initialize image handler to ensure it targets the journal form elements
-    this.imageHandler.initHandler("journal-upload-area", "journal-image", "journal-image-preview", "journal-remove-image", "journal-preview-img");
+    this.imageHandler.initHandler(
+      "journal-upload-area",
+      "journal-image",
+      "journal-image-preview",
+      "journal-remove-image",
+      "journal-preview-img"
+    );
 
     const noteInput = document.getElementById("journal-note");
     const imageValidation = this.imageHandler.validateImage();
-    
+
     if (!noteInput.value.trim()) {
       this.showNotification("Journal note cannot be empty.", "error");
       return;
@@ -933,13 +1155,13 @@ class BotanicalApp {
 
     if (success) {
       this.showNotification("Journal entry added!", "success");
-      
+
       // Reset form and UI
-      noteInput.value = '';
+      noteInput.value = "";
       this.imageHandler.clearImage();
-      
+
       // Re-render the modal to show the new entry and updated count
-      this.showPlantDetail(plantId); 
+      this.showPlantDetail(plantId);
     } else {
       this.showNotification("Error saving journal entry.", "error");
     }
@@ -950,7 +1172,7 @@ class BotanicalApp {
    * @returns {Promise<boolean>} A promise that resolves to true (if OK) or false (if Cancel).
    */
   showCustomConfirm(message) {
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement("div");
 
     wrapper.innerHTML = `
       <div class="confirm-modal-overlay">
@@ -965,11 +1187,11 @@ class BotanicalApp {
     `;
 
     const modal = wrapper.firstElementChild;
-    const okButton = modal.querySelector('#confirm-modalOkBtn');
-    const cancelButton = modal.querySelector('#confirm-modalCancelBtn');
+    const okButton = modal.querySelector("#confirm-modalOkBtn");
+    const cancelButton = modal.querySelector("#confirm-modalCancelBtn");
 
     document.body.appendChild(modal);
-    modal.style.display = 'flex';
+    modal.style.display = "flex";
     return new Promise((resolve) => {
       const onOk = () => {
         cleanup();
@@ -981,11 +1203,11 @@ class BotanicalApp {
       };
       const cleanup = () => {
         modal.remove();
-        okButton.removeEventListener('click', onOk);
-        cancelButton.removeEventListener('click', onCancel);
+        okButton.removeEventListener("click", onOk);
+        cancelButton.removeEventListener("click", onCancel);
       };
-      okButton.addEventListener('click', onOk);
-      cancelButton.addEventListener('click', onCancel);
+      okButton.addEventListener("click", onOk);
+      cancelButton.addEventListener("click", onCancel);
     });
   }
 
@@ -995,7 +1217,11 @@ class BotanicalApp {
    * @param {string} entryId - The ID of the entry to delete.
    */
   async deleteJournalEntry(plantId, entryId) {
-    if (await this.showCustomConfirm("Are you sure you want to delete this journal entry?")) {
+    if (
+      await this.showCustomConfirm(
+        "Are you sure you want to delete this journal entry?"
+      )
+    ) {
       const success = this.plantManager.deleteJournalEntry(plantId, entryId);
       if (success) {
         this.showNotification("Journal entry deleted.", "success");
@@ -1022,9 +1248,7 @@ class BotanicalApp {
     if (!modalContent) return;
 
     // Use placeholder if no image
-    const imageSrc =
-      wish.image ||
-      "assets/images/demo_pic.png";
+    const imageSrc = wish.image || "assets/images/demo_pic.png";
 
     // HTML for the Wishlist Detail Modal
     modalContent.innerHTML = `
@@ -1037,11 +1261,13 @@ class BotanicalApp {
                     <div class="detail-info">
                         <h2>${this.escapeHtml(wish.name)}</h2>
                         <p><small>Added: ${new Date(
-                            wish.createdAt
+                          wish.createdAt
                         ).toLocaleDateString()}</small></p>
                         ${
                           wish.link
-                            ? `<a href="${this.escapeHtml(wish.link)}" target="_blank" class="btn-primary modal-link"><i class="fas fa-shopping-cart"></i> View Store</a>`
+                            ? `<a href="${this.escapeHtml(
+                                wish.link
+                              )}" target="_blank" class="btn-primary modal-link"><i class="fas fa-shopping-cart"></i> View Store</a>`
                             : ""
                         }
                     </div>
@@ -1057,11 +1283,15 @@ class BotanicalApp {
                     : ""
                 }
                 <div class="form-actions">
-                    <button class_."btn-secondary" id="modal-edit-wish-btn" data-wish-id="${wish.id}">
+                    <button class_."btn-secondary" id="modal-edit-wish-btn" data-wish-id="${
+                      wish.id
+                    }">
                         <i class="fas fa-edit"></i>
                         Edit Wish (Future)
                     </button>
-                    <button class="btn-secondary" id="modal-delete-wish-btn" data-wish-id="${wish.id}">
+                    <button class="btn-secondary" id="modal-delete-wish-btn" data-wish-id="${
+                      wish.id
+                    }">
                         <i class="fas fa-trash"></i>
                         Delete Wish
                     </button>
@@ -1070,13 +1300,17 @@ class BotanicalApp {
         `;
 
     // Bind dynamic events inside the modal
-    document.getElementById("modal-delete-wish-btn")?.addEventListener("click", () => {
-      this.deleteWish(wish.id);
-    });
+    document
+      .getElementById("modal-delete-wish-btn")
+      ?.addEventListener("click", () => {
+        this.deleteWish(wish.id);
+      });
 
-    document.getElementById("modal-edit-wish-btn")?.addEventListener("click", () => {
-      this.showNotification("Edit functionality is coming soon!", "info");
-    });
+    document
+      .getElementById("modal-edit-wish-btn")
+      ?.addEventListener("click", () => {
+        this.showNotification("Edit functionality is coming soon!", "info");
+      });
 
     this.showModal();
   }
@@ -1105,7 +1339,11 @@ class BotanicalApp {
    * @param {string} wishId - The ID of the wishlist item.
    */
   async deleteWish(wishId) {
-    if(await this.showCustomConfirm("Are you sure you want to delete this wishlist item? This action cannot be undone.")) {
+    if (
+      await this.showCustomConfirm(
+        "Are you sure you want to delete this wishlist item? This action cannot be undone."
+      )
+    ) {
       this.wishlistManager.deleteWish(wishId);
       this.hideModal();
       this.showNotification("Wishlist item removed", "success");
@@ -1165,7 +1403,7 @@ class BotanicalApp {
                 <span>${message}</span>
             </div>
         `;
-  
+
     // Add styles if not already added
     if (!document.querySelector("#notification-styles")) {
       const styles = document.createElement("style");

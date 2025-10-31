@@ -131,12 +131,9 @@ Thank you for helping to make Botanica even better for all plant lovers 💚
 
 ## 👥 Contributors
 
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/Sandali3000"><img src="https://github.com/Sandali3000.png?size=100" width="100px;" alt="Sandali3000"/><br /><sub><b>Sandali3000</b></sub></a><br />📖 💻 🎨</td>
-    <td align="center"><a href="https://github.com/kaifansariw"><img src="https://github.com/kaifansariw.png?size=100" width="100px;" alt="kaifansariw"/><br /><sub><b>kaifansariw</b></sub></a><br />💻 🐛</td>
-  </tr>
-</table>
+<!-- CONTRIBUTORS:START -->
+<!-- CONTRIBUTORS:END -->
+
 
 **Legend:**  
 📖 Documentation | 💻 Code | 🎨 Design | 🐛 Bug Fixes | ✅ Tests  
